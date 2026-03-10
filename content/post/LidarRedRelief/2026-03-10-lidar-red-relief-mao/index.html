@@ -1,0 +1,159 @@
+---
+title: How to Make A Lidar Red Relief Map
+author: 'Dr. Meaghan Wetherell'
+date: '2026-03-10'
+slug: lidar-red-relief-map
+categories: []
+tags: []
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>First, some terminology!</p>
+<p><em>Red Relief Map:</em> This is a special type of map that highlights both the slope and the elevation on fine-scale elevation data. It makes elevation data easier to see and understand, especially for non-specialists.</p>
+<p><em>Lidar</em>: Light detection and ranging data, aka “I flew a plane and shot lasers at the ground and now I know how far away the ground is, but really detailed.”</p>
+<p>So this walkthrough is how to take lidar data and turn it into that type of map. In R.</p>
+</div>
+<div id="wait-where-do-i-get-lidar-data" class="section level1">
+<h1>Wait where do I get lidar data?</h1>
+<p>Lidar is freely available for lots of places. You can find good lidar coverage and ways to download it using the <a href="https://apps.nationalmap.gov/downloader/">National Map Downloader</a>. As a hint, don’t forget to select your map extent and then hit search products once you’ve figured out what you want to download. Somehow that was not obvious when I was first using it.</p>
+<p>When I was testing this, I used lidar from Washington, Oregon, and Utah. And let me tell you, I now have some preferences for storage of that data… and that preference is to not do what Oregon is doing. Oregon lidar is downloaded in giant, weird packages. It was hard to figure out exactly what subset of the lidar you want. I’ll post a separate tutorial on that at some point.</p>
+</div>
+<div id="required-packages" class="section level1">
+<h1>Required Packages</h1>
+<p>You’ll need several packages to get this tutorial file to work.</p>
+<pre class="r"><code>install.packages(&quot;sf&quot;) #geography made simple(r)
+install.packages(&quot;ggplot2&quot;) #basic plots
+install.packages(&quot;ggnewscale&quot;) #lets you have two gradients!
+install.packages(&quot;terra&quot;) #does all the hard geography lifting
+install.packages(&quot;dplyr&quot;) #for the pipes</code></pre>
+<p>Once installed, load ’em up.</p>
+<pre class="r"><code>library(sf) 
+library(ggplot2)
+library(ggnewscale) 
+library(terra)
+library(dplyr)</code></pre>
+</div>
+<div id="making-the-map" class="section level1">
+<h1>Making the Map</h1>
+<p>Once you’ve found the right subsection of lidar, read it in using rast from the terra package. This section of Lidar is near where my house was as a kid, and the spot we’re going to highlight is a location that I swore up and down as a child had a castle on its property. It didn’t, I just had an over-active imagination and an untreated astigmatism, but it sounds as fun a reason to look at lidar as any.</p>
+<pre class="r"><code>castle  &lt;- rast(&quot;LDQ-45122C6/LDQ-45122C6/2014_OLC_Metro/Bare_Earth/bh45122c6&quot;)</code></pre>
+<div id="clip-your-lidar-file" class="section level2">
+<h2>Clip your lidar file</h2>
+<p>Because most of these lidar files are ENORMOUS, we’re going to clip it to make it more manageable (and to zoom in on subsections if you’re into that). I added a <strong>growth</strong> variable because I wanted to play around with the size without having to do a lot of converting in my head.</p>
+<pre class="r"><code>#Clipping box in lat-lon
+growth = .002
+
+xmin1 = -122.671 - 2*growth
+xmax1 =  -122.642 + 2*growth
+ymin1 = 45.293-growth 
+ymax1 = 45.306+growth
+
+# make it a cropping box
+castle_Crop_Lat &lt;- rast(xmin=xmin1, xmax = xmax1, 
+                        ymin = ymin1, ymax = ymax1)</code></pre>
+</div>
+<div id="project-your-raster" class="section level2">
+<h2>Project Your Raster</h2>
+<p>Ok, don’t just project your big ol’ lidar image or you’ll be sitting here for a very long time. Instead, clip the raster first and then project your much smaller object. That means you need to take your nice tidy little crop box, project it to have the same coordinates as the bigger lidar image, and then use that to crop. Then project your cropped lidar file into something a bit more coherent than the default lidar projection.</p>
+<pre class="r"><code># make your cropping box the right projection
+castle_Crop_Box &lt;- project(castle_Crop_Lat, crs(castle))
+
+#now crop the castle lidar
+castle_cropped &lt;- crop(castle, castle_Crop_Box)
+
+
+#now, project your cropped castle lidar back into a reasonable projection
+castle1 &lt;- project(castle_cropped,&quot;EPSG:4326&quot;)</code></pre>
+<p>If you stop here, your lidar will look kinda wonky becase the original projection was in a weird conic thing. So now you re-crop it to make it a square shape.</p>
+<pre class="r"><code>#finally, make it back into a square shape 
+castle2 &lt;- crop(castle1, castle_Crop_Lat)</code></pre>
+</div>
+<div id="create-underlying-layers" class="section level2">
+<h2>Create Underlying Layers</h2>
+<p>To make a red relief image you need to have a few different layers. The top layer will be the slope. The bottom layer will either be a digital elevation model (DEM) or a hillshade model (sparkly extra DEM).</p>
+<p>You have the DEM. That’s what you got. It’s also called a DTM, to make your life maximally confusing.</p>
+<p>But you don’t have a hillshade layer or a slope layer. So let’s make those. And since aspect is required to make a hillshade model, you’ll need to make that too. You can make those requirements using <code>terrain()</code> from <code>terra</code>. I am specifying terra here because inevitably when making maps I somehow have another R tab open where i load the raster library and as a result, suddenly the terrain function doesn’t work as expected.</p>
+<pre class="r"><code>castle.slope &lt;-  terra::terrain(castle2, v= &quot;slope&quot;, 
+                                neighbors = 8, unit = &quot;radians&quot;)
+castle.asp &lt;-  terra::terrain(castle2, v= &quot;aspect&quot;, 
+                              neighbors = 8, unit = &quot;radians&quot;)</code></pre>
+<p>Now, use those to make the hillshade map in case you think it’s prettier.</p>
+<pre class="r"><code>castle.hill &lt;- shade(slope=castle.slope, 
+                     aspect=castle.asp, 
+                     direction = 140)</code></pre>
+</div>
+<div id="get-set-up-for-ggplot2" class="section level2">
+<h2>Get Set Up For ggplot2</h2>
+<p>I like to mess around with this stuff in ggplot, which doesn’t like rasters the way I do. That means it’s easier to transform the rasters into data frames, using <code>as.data.frame()</code> from terra.</p>
+<pre class="r"><code>castle3 &lt;- as.data.frame(castle2, xy = TRUE)
+colnames(castle3) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
+castle.slope2 &lt;- as.data.frame(castle.slope, xy = TRUE)
+colnames(castle.slope2) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
+castle.hill2 &lt;- as.data.frame(castle.hill, xy = TRUE)
+colnames(castle.hill2) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)</code></pre>
+</div>
+<div id="plot-base-layers" class="section level2">
+<h2>Plot Base Layers</h2>
+<p>Now we are ready to plot! Remember these maps are made with two different types of plots - hillshade, and plain old vanilla DEM. Here we can make them and you can cross-compare them at your leisure.</p>
+<pre class="r"><code>hill.plot &lt;- ggplot()+
+  geom_raster(data = castle.hill2, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = &quot;black&quot;, 
+                       mid = &quot;grey50&quot;, 
+                       high = &quot;grey92&quot;, 
+                       midpoint=.8)
+
+hill.plot + labs(title = &quot;Hillshade Plot&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>DEM.plot &lt;- ggplot()+
+  geom_raster(data = castle3, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = &quot;black&quot;,
+                       mid = &quot;grey50&quot;, 
+                       high = &quot;grey92&quot;, 
+                       midpoint=180)
+
+DEM.plot +  labs(title = &quot;DEM Plot, Meaghan&#39;s Favorite&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>A big part of making these look nice is playing around with the gradient fill component and picking a nice midpoint that makes everything highlighted really well. You can do that by randomly entering numbers or be a bit more methodical by looking at a histogram and picking something slightly higher than the center.</p>
+<pre class="r"><code>hist(castle.hill2$z)
+abline(v = .8, col = &quot;red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="plot-the-slope-raster" class="section level2">
+<h2>Plot the Slope Raster</h2>
+<p>Now, we add on a slope raster. Red is classic (hence red relief) but you can use other colors here! I’m using some changing transparency as well with the <code>alpha()</code> function, to make it so that steeper slopes are both darker and more opaque.</p>
+<pre class="r"><code>slope.plot &lt;- DEM.plot +
+  new_scale_fill()+
+  geom_raster(data = castle.slope2, 
+              aes(x=x, y=y, fill = z), alpha = .25)+
+  scale_fill_gradient(low = alpha(&quot;pink&quot;, .0001), 
+                      high = alpha(&quot;firebrick&quot;, .3))
+
+slope.plot</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="prettify-the-plot" class="section level2">
+<h2>Prettify the Plot</h2>
+<p>Now, add in the things that make this prettier! That includes clipping the sides of the plot using the <strong>expand</strong> argument, adding a white border to avoid showing off how awkwardly you clipped it, etc. That last bit only matters when you print out the file btw, but I can assure you otherwise the white border your printer chooses will be a seriously mismatched rectangl.</p>
+<p>And of course, this is where you turn off annoying lat/lon coordinates and legend items using theme_void(). Why? Because red relief maps are about vibes, not about specific reconstructions that require you to know what slope percentage exactly you’re looking at.</p>
+<pre class="r"><code>final.plot &lt;- slope.plot +
+  theme_void()+
+  theme(legend.position = &quot;none&quot;)+
+  scale_x_continuous(limits = c(xmin1, xmax1), expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0))+
+  theme(plot.background = element_rect(fill = &quot;white&quot;, color = NA),
+        plot.margin = margin(15, 15, 15, 15),
+        panel.border = element_rect(color = &quot;white&quot;, fill = NA, size = 4)) 
+
+final.plot</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="export-your-plot" class="section level2">
+<h2>Export your plot</h2>
+<p>Finally, export it! Then you can print it, or make it a background. Or treasure it forever as an NFT or something, I don’t know. What I did was use these as an emergency Christmas present by making maps of people’s homes, which is only creepy if you don’t know those people very well or have been otherwise barred from their homes.</p>
+<pre class="r"><code>ggsave(&quot;castle 24x18.jpg&quot;, final.plot, dpi = 300, 
+       width = 24, height = 18, units = &quot;in&quot;)</code></pre>
+</div>
+</div>
