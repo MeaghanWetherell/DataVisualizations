@@ -14,7 +14,7 @@ knitr::opts_chunk$set(warning = FALSE, message=FALSE, fig.align = 'center')
 ```{r fig.align='center', echo=FALSE}
 knitr::include_graphics("castle small.jpg")
 ```
-
+ Want just the code? Skip to the bottom!
 
 # Introduction
 First, some terminology!
