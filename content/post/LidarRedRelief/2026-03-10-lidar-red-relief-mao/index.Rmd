@@ -8,8 +8,7 @@ tags: []
 ---
 
 ```{r setup, include=FALSE,}
-knitr::opts_chunk$set(warning = FALSE, message=FALSE, fig.align = 'center')
-
+knitr::opts_chunk$set(warning = FALSE, message=FALSE)
 ```
 ```{r fig.align='center', echo=FALSE}
 knitr::include_graphics("castle small.jpg")

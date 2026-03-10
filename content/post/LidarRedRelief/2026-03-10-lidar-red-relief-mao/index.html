@@ -9,6 +9,8 @@ tags: []
 
 
 
+<p><img src="castle%20small.jpg" alt="" width="600" style="display: block; margin: auto;" />
+Want just the code? Skip to the bottom!</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>First, some terminology!</p>
@@ -106,7 +108,7 @@ colnames(castle.hill2) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)</cod
                        midpoint=.8)
 
 hill.plot + labs(title = &quot;Hillshade Plot&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/base-1.png" alt="" width="672" /></p>
 <pre class="r"><code>DEM.plot &lt;- ggplot()+
   geom_raster(data = castle3, aes(x=x, y=y, fill = z))+
   scale_fill_gradient2(low = &quot;black&quot;,
@@ -115,11 +117,11 @@ hill.plot + labs(title = &quot;Hillshade Plot&quot;)</code></pre>
                        midpoint=180)
 
 DEM.plot +  labs(title = &quot;DEM Plot, Meaghan&#39;s Favorite&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-2.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/base-2.png" alt="" width="672" /></p>
 <p>A big part of making these look nice is playing around with the gradient fill component and picking a nice midpoint that makes everything highlighted really well. You can do that by randomly entering numbers or be a bit more methodical by looking at a histogram and picking something slightly higher than the center.</p>
 <pre class="r"><code>hist(castle.hill2$z)
 abline(v = .8, col = &quot;red&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/histo-1.png" alt="" width="672" /></p>
 </div>
 <div id="plot-the-slope-raster" class="section level2">
 <h2>Plot the Slope Raster</h2>
@@ -132,7 +134,7 @@ abline(v = .8, col = &quot;red&quot;)</code></pre>
                       high = alpha(&quot;firebrick&quot;, .3))
 
 slope.plot</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/fullplot-1.png" alt="" width="672" /></p>
 </div>
 <div id="prettify-the-plot" class="section level2">
 <h2>Prettify the Plot</h2>
@@ -148,7 +150,7 @@ slope.plot</code></pre>
         panel.border = element_rect(color = &quot;white&quot;, fill = NA, size = 4)) 
 
 final.plot</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/pretty-1.png" alt="" width="672" /></p>
 </div>
 <div id="export-your-plot" class="section level2">
 <h2>Export your plot</h2>
@@ -156,4 +158,88 @@ final.plot</code></pre>
 <pre class="r"><code>ggsave(&quot;castle 24x18.jpg&quot;, final.plot, dpi = 300, 
        width = 24, height = 18, units = &quot;in&quot;)</code></pre>
 </div>
+</div>
+<div id="the-code" class="section level1">
+<h1>The Code</h1>
+<p>Wanted just the code with no interruptions? K. Here you go.</p>
+<pre class="r"><code>library(sf) 
+library(ggplot2)
+library(ggnewscale) 
+library(terra)
+library(dplyr)</code></pre>
+<pre class="r"><code>castle  &lt;- rast(&quot;LDQ-45122C6/LDQ-45122C6/2014_OLC_Metro/Bare_Earth/bh45122c6&quot;)</code></pre>
+<pre class="r"><code>#Clipping box in lat-lon
+growth = .002
+
+xmin1 = -122.671 - 2*growth
+xmax1 =  -122.642 + 2*growth
+ymin1 = 45.293-growth 
+ymax1 = 45.306+growth
+
+# make it a cropping box
+castle_Crop_Lat &lt;- rast(xmin=xmin1, xmax = xmax1, 
+                        ymin = ymin1, ymax = ymax1)</code></pre>
+<pre class="r"><code># make your cropping box the right projection
+castle_Crop_Box &lt;- project(castle_Crop_Lat, crs(castle))
+
+#now crop the castle lidar
+castle_cropped &lt;- crop(castle, castle_Crop_Box)
+
+
+#now, project your cropped castle lidar back into a reasonable projection
+castle1 &lt;- project(castle_cropped,&quot;EPSG:4326&quot;)</code></pre>
+<pre class="r"><code>#finally, make it back into a square shape 
+castle2 &lt;- crop(castle1, castle_Crop_Lat)</code></pre>
+<pre class="r"><code>castle.slope &lt;-  terra::terrain(castle2, v= &quot;slope&quot;, 
+                                neighbors = 8, unit = &quot;radians&quot;)
+castle.asp &lt;-  terra::terrain(castle2, v= &quot;aspect&quot;, 
+                              neighbors = 8, unit = &quot;radians&quot;)</code></pre>
+<pre class="r"><code>castle.hill &lt;- shade(slope=castle.slope, 
+                     aspect=castle.asp, 
+                     direction = 140)</code></pre>
+<pre class="r"><code>castle3 &lt;- as.data.frame(castle2, xy = TRUE)
+colnames(castle3) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
+castle.slope2 &lt;- as.data.frame(castle.slope, xy = TRUE)
+colnames(castle.slope2) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)
+castle.hill2 &lt;- as.data.frame(castle.hill, xy = TRUE)
+colnames(castle.hill2) &lt;- c(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;)</code></pre>
+<pre class="r"><code>hill.plot &lt;- ggplot()+
+  geom_raster(data = castle.hill2, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = &quot;black&quot;, 
+                       mid = &quot;grey50&quot;, 
+                       high = &quot;grey92&quot;, 
+                       midpoint=.8)
+
+hill.plot + labs(title = &quot;Hillshade Plot&quot;)
+
+DEM.plot &lt;- ggplot()+
+  geom_raster(data = castle3, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = &quot;black&quot;,
+                       mid = &quot;grey50&quot;, 
+                       high = &quot;grey92&quot;, 
+                       midpoint=180)
+
+DEM.plot +  labs(title = &quot;DEM Plot, Meaghan&#39;s Favorite&quot;)</code></pre>
+<pre class="r"><code>hist(castle.hill2$z)
+abline(v = .8, col = &quot;red&quot;)</code></pre>
+<pre class="r"><code>slope.plot &lt;- DEM.plot +
+  new_scale_fill()+
+  geom_raster(data = castle.slope2, 
+              aes(x=x, y=y, fill = z), alpha = .25)+
+  scale_fill_gradient(low = alpha(&quot;pink&quot;, .0001), 
+                      high = alpha(&quot;firebrick&quot;, .3))
+
+slope.plot</code></pre>
+<pre class="r"><code>final.plot &lt;- slope.plot +
+  theme_void()+
+  theme(legend.position = &quot;none&quot;)+
+  scale_x_continuous(limits = c(xmin1, xmax1), expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0))+
+  theme(plot.background = element_rect(fill = &quot;white&quot;, color = NA),
+        plot.margin = margin(15, 15, 15, 15),
+        panel.border = element_rect(color = &quot;white&quot;, fill = NA, size = 4)) 
+
+final.plot</code></pre>
+<pre class="r"><code>ggsave(&quot;castle 24x18.jpg&quot;, final.plot, dpi = 300, 
+       width = 24, height = 18, units = &quot;in&quot;)</code></pre>
 </div>
