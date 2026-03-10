@@ -93,13 +93,14 @@ castle_Crop_Box <- project(castle_Crop_Lat, crs(castle))
 castle_cropped <- crop(castle, castle_Crop_Box)
 
 
-#now, project your cropped castle lidar back into a reasonable projection
+#project your cropped castle lidar back into 
+#a reasonable projection
 castle1 <- project(castle_cropped,"EPSG:4326")
 ```
 
 If you stop here, your lidar will look kinda wonky becase the original projection was in a weird conic thing. So now you re-crop it to make it a square shape. 
 ```{r croptosquare}
-#finally, make it back into a square shape 
+# make it back into a square shape 
 castle2 <- crop(castle1, castle_Crop_Lat)
 ```
 
@@ -189,11 +190,17 @@ And of course, this is where you turn off annoying lat/lon coordinates and legen
 final.plot <- slope.plot +
   theme_void()+
   theme(legend.position = "none")+
-  scale_x_continuous(limits = c(xmin1, xmax1), expand = c(0,0)) +
+  scale_x_continuous(limits = c(xmin1, xmax1), 
+                     expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0))+
-  theme(plot.background = element_rect(fill = "white", color = NA),
-        plot.margin = margin(15, 15, 15, 15),
-        panel.border = element_rect(color = "white", fill = NA, size = 4)) 
+  theme(plot.background = 
+          element_rect(fill = "white", color = NA),
+        plot.margin = 
+          margin(15, 15, 15, 15),
+        panel.border = 
+          element_rect(color = "white", 
+                       fill = NA, 
+                       size = 4)) 
 
 final.plot
 ```
