@@ -1,6 +1,6 @@
 baseurl: /
 languageCode: en-US
-title: A Hugo website
+title: Data Visualizations in R
 theme: hugo-lithium
 ignoreFiles:
   - \.Rmd$
@@ -12,10 +12,8 @@ menu:
   main:
     - name: About
       url: /about/
-    - name: GitHub
-      url: https://github.com/rstudio/blogdown
-    - name: Twitter
-      url: https://twitter.com/rstudio
+    - name: Personal Website
+      url: https://www.meaghanwetherell.com
 params:
   MathJaxCDN: //cdnjs.cloudflare.com/ajax/libs
   MathJaxVersion: 2.7.5
