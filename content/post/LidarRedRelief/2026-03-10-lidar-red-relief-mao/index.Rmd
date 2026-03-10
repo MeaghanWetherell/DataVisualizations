@@ -13,7 +13,7 @@ knitr::opts_chunk$set(warning = FALSE, message=FALSE)
 ```{r fig.align='center', echo=FALSE}
 knitr::include_graphics("castle small.jpg")
 ```
- Want just the code? Skip to the bottom!
+ Want just the code? [Skip to the bottom!](#custom)
 
 # Introduction
 First, some terminology!
@@ -214,7 +214,7 @@ ggsave("castle small.jpg", final.plot2, dpi = 300,
 ```
 
 
-# The Code
+# The Code {#custom}
 Wanted just the code with no interruptions? K. Here you go.
 ```{r library, eval=FALSE}
 ```
