@@ -7,9 +7,11 @@ categories: []
 tags: []
 ---
 
-```{r setup, include=FALSE, fig.align='center'}
+```{r setup, include=FALSE,}
 knitr::opts_chunk$set(warning = FALSE, message=FALSE, fig.align = 'center')
 
+```
+```{r fig.align='center', echo=FALSE}
 knitr::include_graphics("castle small.jpg")
 ```
 
