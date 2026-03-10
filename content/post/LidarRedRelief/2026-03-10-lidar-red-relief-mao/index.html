@@ -67,10 +67,11 @@ castle_Crop_Box &lt;- project(castle_Crop_Lat, crs(castle))
 castle_cropped &lt;- crop(castle, castle_Crop_Box)
 
 
-#now, project your cropped castle lidar back into a reasonable projection
+#project your cropped castle lidar back into 
+#a reasonable projection
 castle1 &lt;- project(castle_cropped,&quot;EPSG:4326&quot;)</code></pre>
 <p>If you stop here, your lidar will look kinda wonky becase the original projection was in a weird conic thing. So now you re-crop it to make it a square shape.</p>
-<pre class="r"><code>#finally, make it back into a square shape 
+<pre class="r"><code># make it back into a square shape 
 castle2 &lt;- crop(castle1, castle_Crop_Lat)</code></pre>
 </div>
 <div id="create-underlying-layers" class="section level2">
@@ -143,11 +144,17 @@ slope.plot</code></pre>
 <pre class="r"><code>final.plot &lt;- slope.plot +
   theme_void()+
   theme(legend.position = &quot;none&quot;)+
-  scale_x_continuous(limits = c(xmin1, xmax1), expand = c(0,0)) +
+  scale_x_continuous(limits = c(xmin1, xmax1), 
+                     expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0))+
-  theme(plot.background = element_rect(fill = &quot;white&quot;, color = NA),
-        plot.margin = margin(15, 15, 15, 15),
-        panel.border = element_rect(color = &quot;white&quot;, fill = NA, size = 4)) 
+  theme(plot.background = 
+          element_rect(fill = &quot;white&quot;, color = NA),
+        plot.margin = 
+          margin(15, 15, 15, 15),
+        panel.border = 
+          element_rect(color = &quot;white&quot;, 
+                       fill = NA, 
+                       size = 4)) 
 
 final.plot</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/pretty-1.png" alt="" width="672" /></p>
@@ -186,9 +193,10 @@ castle_Crop_Box &lt;- project(castle_Crop_Lat, crs(castle))
 castle_cropped &lt;- crop(castle, castle_Crop_Box)
 
 
-#now, project your cropped castle lidar back into a reasonable projection
+#project your cropped castle lidar back into 
+#a reasonable projection
 castle1 &lt;- project(castle_cropped,&quot;EPSG:4326&quot;)</code></pre>
-<pre class="r"><code>#finally, make it back into a square shape 
+<pre class="r"><code># make it back into a square shape 
 castle2 &lt;- crop(castle1, castle_Crop_Lat)</code></pre>
 <pre class="r"><code>castle.slope &lt;-  terra::terrain(castle2, v= &quot;slope&quot;, 
                                 neighbors = 8, unit = &quot;radians&quot;)
@@ -233,11 +241,17 @@ slope.plot</code></pre>
 <pre class="r"><code>final.plot &lt;- slope.plot +
   theme_void()+
   theme(legend.position = &quot;none&quot;)+
-  scale_x_continuous(limits = c(xmin1, xmax1), expand = c(0,0)) +
+  scale_x_continuous(limits = c(xmin1, xmax1), 
+                     expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0))+
-  theme(plot.background = element_rect(fill = &quot;white&quot;, color = NA),
-        plot.margin = margin(15, 15, 15, 15),
-        panel.border = element_rect(color = &quot;white&quot;, fill = NA, size = 4)) 
+  theme(plot.background = 
+          element_rect(fill = &quot;white&quot;, color = NA),
+        plot.margin = 
+          margin(15, 15, 15, 15),
+        panel.border = 
+          element_rect(color = &quot;white&quot;, 
+                       fill = NA, 
+                       size = 4)) 
 
 final.plot</code></pre>
 <pre class="r"><code>ggsave(&quot;castle 24x18.jpg&quot;, final.plot, dpi = 300, 
