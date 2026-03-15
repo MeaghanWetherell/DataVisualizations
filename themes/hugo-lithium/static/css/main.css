@@ -95,7 +95,7 @@ img {
 }
 
 .content {
-  max-width: 700px;
+ /* max-width: 700px; */
   margin: 40px auto 10px;
   padding: 0 15px;
   font-size: 16px;
@@ -144,7 +144,7 @@ img {
 }
 
 .article-content hr {
-  width: 150px;
+  /*width: 150px; */
   margin: 50px auto;
   height: 1px;
   overflow: hidden;
