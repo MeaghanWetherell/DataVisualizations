@@ -10,12 +10,13 @@ permalinks:
   post: /:year/:month/:day/:slug/
 menu:
   main:
+    - name: R Blog
+      url: /
     - name: About
       url: /about/
     - name: Personal Website
       url: https://www.meaghanwetherell.com
-    - name: Blog
-      url: /
+
 params:
   MathJaxCDN: //cdnjs.cloudflare.com/ajax/libs
   MathJaxVersion: 2.7.5
