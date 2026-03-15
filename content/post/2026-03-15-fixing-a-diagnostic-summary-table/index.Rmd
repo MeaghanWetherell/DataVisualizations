@@ -165,7 +165,7 @@ wow <- Kt4 %>%
   tab_row_group(rows = c(10,11),
                 label = "  ") %>% 
   row_group_order(groups = c(NA, "  ")) %>%
-  tab_options(table.width = pct(90)) %>%  
+  #tab_options(table.width = pct(90)) %>%  
   fmt_image(columns = Icon,
             rows = c(1, 2),
             height = "2.7em") %>%
