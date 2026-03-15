@@ -151,6 +151,7 @@ Kt4 %>%
 
 We have our base table. let's make a few adjustments including turning off the "Icon" column title, making the images a little bigger, and separating out the fossils so they're in a separate group that's down below with some white space in between. I'm also giving it a name here so that we can call it out below for easy saving.
 ```{r wow}
+gt::as_raw_html()
 wow <- Kt4 %>% 
   gt() %>%
 
