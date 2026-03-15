@@ -192,7 +192,10 @@ wow <- Kt4 %>%
   
   #better fit long label
   cols_width(Posture~px(160))%>% 
-  cols_label(Icon = "")
+  cols_label(Icon = "") %>%
+  
+  #This last bit is to make it look nice on blogdown.
+  as_raw_html()
 
 wow
 ```
