@@ -1,7 +1,7 @@
 baseurl: /
 languageCode: en-US
 title: Data Visualizations in R
-theme: hugo-xmag
+theme: hugo-lithium
 ignoreFiles:
   - \.Rmd$
   - \.Rmarkdown$
