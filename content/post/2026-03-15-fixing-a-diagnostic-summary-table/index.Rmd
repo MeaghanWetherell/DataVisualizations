@@ -143,7 +143,8 @@ You can then use `fmt_image()` to tell it to make one of the columns an image ac
 Kt4 %>% 
   gt() %>%
   fmt_image(columns = Icon,
-            rows = c(1:9))
+            rows = c(1:9)) %>%
+  as_raw_html() #this is to make it look nice on blogdown, you can drop otherwise
 ```
 
 
@@ -154,7 +155,6 @@ We have our base table. let's make a few adjustments including turning off the "
 
 wow <- Kt4 %>% 
   gt() %>%
-
   cols_align(align = "center") %>%
   
   #move label closer to icon
@@ -165,7 +165,8 @@ wow <- Kt4 %>%
   tab_row_group(rows = c(10,11),
                 label = "  ") %>% 
   row_group_order(groups = c(NA, "  ")) %>%
-  #tab_options(table.width = pct(90)) %>%  
+
+  # Add and format icons
   fmt_image(columns = Icon,
             rows = c(1, 2),
             height = "2.7em") %>%
@@ -187,17 +188,10 @@ wow <- Kt4 %>%
   #bigger font = smaller elephant offset
   tab_options(table.font.size = 10) %>% 
   
-  #add some space before Posture column
-#  cols_width(Icon~px(70))%>% 
+  # turn off the one column label
+  cols_label(Icon = "")
   
-  #better fit long label
-  #cols_width(Posture~px(160))%>% 
-  cols_label(Icon = "") #%>%
-  
-  #This last bit is to make it look nice on blogdown.
-  #as_raw_html()
-
-wow
+as_raw_html(wow) # use as_raw_html() otherwise it does not look nice on blogdown
 ```
 
 # Save It
