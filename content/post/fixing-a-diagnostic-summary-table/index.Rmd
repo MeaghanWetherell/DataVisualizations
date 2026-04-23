@@ -1,10 +1,10 @@
 ---
 title: Fixing a Diagnostic Summary Table
 author: 'Meaghan Wetherell'
-date: '2026-03-15'
+date: '2026-04-23'
 slug: fixing-a-diagnostic-summary-table
-categories: []
-tags: [fixes]
+categories: ["Revisions"]
+tags: ["tables"]
 ---
 
 ```{r setup, include=FALSE}
