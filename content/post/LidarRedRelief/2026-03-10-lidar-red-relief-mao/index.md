@@ -7,12 +7,8 @@ categories: ["Maps"]
 tags: ["maps", "lidar"]
 ---
 
-```{r setup, include=FALSE,}
-knitr::opts_chunk$set(warning = FALSE, message=FALSE)
-```
-```{r fig.align='center', echo=FALSE}
-knitr::include_graphics("castle small.jpg")
-```
+
+<img src="castle small.jpg" alt="" width="600" style="display: block; margin: auto;" />
  Want just the code? [Skip to the bottom!](#custom)
 
 # Introduction
@@ -33,7 +29,8 @@ When I was testing this, I used lidar from Washington, Oregon, and Utah. And let
 # Required Packages
 You'll need several packages to get this tutorial file to work.
 
-```{r eval = FALSE}
+
+``` r
 install.packages("sf") #geography made simple(r)
 install.packages("ggplot2") #basic plots
 install.packages("ggnewscale") #lets you have two gradients!
@@ -43,7 +40,8 @@ install.packages("dplyr") #for the pipes
 
 Once installed, load 'em up.
 
-```{r library}
+
+``` r
 library(sf) 
 library(ggplot2)
 library(ggnewscale) 
@@ -56,17 +54,17 @@ library(dplyr)
 
 Once you've found the right subsection of lidar, read it in using rast from the terra package. This section of Lidar is near where my house was as a kid, and the spot we're going to highlight is a location that I swore up and down as a child had a castle on its property. It didn't, I just had an over-active imagination and an untreated astigmatism, but it sounds as fun a reason to look at lidar as any.
 
-```{r dataimp, eval=FALSE}
+
+``` r
 castle  <- rast("LDQ-45122C6/LDQ-45122C6/2014_OLC_Metro/Bare_Earth/bh45122c6")
 ```
-```{r echo=FALSE}
-castle  <- rast("croppedcastle.tif")
-```
+
 
 
 ## Clip your lidar file
 Because most of these lidar files are ENORMOUS, we're going to clip it to make it more manageable (and to zoom in on subsections if you're into that). I added a **growth** variable because I wanted to play around with the size without having to do a lot of converting in my head. 
-```{r clipbox}
+
+``` r
 #Clipping box in lat-lon
 growth = .002
 
@@ -78,14 +76,13 @@ ymax1 = 45.306+growth
 # make it a cropping box
 castle_Crop_Lat <- rast(xmin=xmin1, xmax = xmax1, 
                         ymin = ymin1, ymax = ymax1)
-
-
 ```
 
 ## Project Your Raster
 Ok, don't just project your big ol' lidar image or you'll be sitting here for a very long time. Instead, clip the raster first and then project your much smaller object. That means you need to take your nice tidy little crop box, project it to have the same coordinates as the bigger lidar image, and then use that to crop. Then project your cropped lidar file into something a bit more coherent than the default lidar projection.
 
-```{r clip}
+
+``` r
 # make your cropping box the right projection
 castle_Crop_Box <- project(castle_Crop_Lat, crs(castle))
 
@@ -99,7 +96,8 @@ castle1 <- project(castle_cropped,"EPSG:4326")
 ```
 
 If you stop here, your lidar will look kinda wonky becase the original projection was in a weird conic thing. So now you re-crop it to make it a square shape. 
-```{r croptosquare}
+
+``` r
 # make it back into a square shape 
 castle2 <- crop(castle1, castle_Crop_Lat)
 ```
@@ -110,7 +108,8 @@ To make a red relief image you need to have a few different layers. The top laye
 You have the DEM. That's what you got. It's also called a DTM, to make your life maximally confusing.
 
 But you don't have a hillshade layer or a slope layer. So let's make those. And since aspect is required to make a hillshade model, you'll need to make that too. You can make those requirements using `terrain()` from `terra`. I am specifying terra here because inevitably when making maps I somehow have another R tab open where i load the raster library and as a result, suddenly the terrain function doesn't work as expected.
-```{r slope}
+
+``` r
 castle.slope <-  terra::terrain(castle2, v= "slope", 
                                 neighbors = 8, unit = "radians")
 castle.asp <-  terra::terrain(castle2, v= "aspect", 
@@ -118,7 +117,8 @@ castle.asp <-  terra::terrain(castle2, v= "aspect",
 ```
 
 Now, use those to make the hillshade map in case you think it's prettier.
-```{r hillshade}
+
+``` r
 castle.hill <- shade(slope=castle.slope, 
                      aspect=castle.asp, 
                      direction = 140)
@@ -126,20 +126,182 @@ castle.hill <- shade(slope=castle.slope,
 
 ## Get Set Up For ggplot2
 I like to mess around with this stuff in ggplot, which doesn't like rasters the way I do. That means it's easier to transform the rasters into data frames, using `as.data.frame()` from terra. 
-```{r df}
+
+``` r
 castle3 <- as.data.frame(castle2, xy = TRUE)
 colnames(castle3) <- c("x", "y", "z")
 castle.slope2 <- as.data.frame(castle.slope, xy = TRUE)
 colnames(castle.slope2) <- c("x", "y", "z")
 castle.hill2 <- as.data.frame(castle.hill, xy = TRUE)
 colnames(castle.hill2) <- c("x", "y", "z")
-
 ```
 
 
 ## Plot Base Layers
 Now we are ready to plot! Remember these maps are made with two different types of plots - hillshade, and plain old vanilla DEM. Here we can make them and you can cross-compare them at your leisure.
-```{r base}
+
+``` r
+hill.plot <- ggplot()+
+  geom_raster(data = castle.hill2, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = "black", 
+                       mid = "grey50", 
+                       high = "grey92", 
+                       midpoint=.8)
+
+hill.plot + labs(title = "Hillshade Plot")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/base-1.png" alt="" width="672" />
+
+``` r
+DEM.plot <- ggplot()+
+  geom_raster(data = castle3, aes(x=x, y=y, fill = z))+
+  scale_fill_gradient2(low = "black",
+                       mid = "grey50", 
+                       high = "grey92", 
+                       midpoint=180)
+
+DEM.plot +  labs(title = "DEM Plot, Meaghan's Favorite")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/base-2.png" alt="" width="672" />
+
+A big part of making these look nice is playing around with the gradient fill component and picking a nice midpoint that makes everything highlighted really well. You can do that by randomly entering numbers or be a bit more methodical by looking at a histogram and picking something slightly higher than the center.
+ 
+
+``` r
+hist(castle.hill2$z)
+abline(v = .8, col = "red")
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/histo-1.png" alt="" width="672" />
+
+
+## Plot the Slope Raster
+Now, we add on a slope raster. Red is classic (hence red relief) but you can use other colors here! I'm using some changing transparency as well with the `alpha()` function, to make it so that steeper slopes are both darker and more opaque.
+
+``` r
+slope.plot <- DEM.plot +
+  new_scale_fill()+
+  geom_raster(data = castle.slope2, 
+              aes(x=x, y=y, fill = z), alpha = .25)+
+  scale_fill_gradient(low = alpha("pink", .0001), 
+                      high = alpha("firebrick", .3))
+
+slope.plot
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/fullplot-1.png" alt="" width="672" />
+
+
+## Prettify the Plot
+
+Now, add in the things that make this prettier! That includes clipping the sides of the plot using the **expand** argument, adding a white border to avoid showing off how awkwardly you clipped it, etc. That last bit only matters when you print out the file btw, but I can assure you otherwise the white border your printer chooses will be a seriously mismatched rectangl. 
+
+And of course, this is where you turn off annoying lat/lon coordinates and legend items using theme_void(). Why? Because red relief maps are about vibes, not about specific reconstructions that require you to know what slope percentage exactly you're looking at. 
+
+``` r
+final.plot <- slope.plot +
+  theme_void()+
+  theme(legend.position = "none")+
+  scale_x_continuous(limits = c(xmin1, xmax1), 
+                     expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0))+
+  theme(plot.background = 
+          element_rect(fill = "white", color = NA),
+        plot.margin = 
+          margin(15, 15, 15, 15),
+        panel.border = 
+          element_rect(color = "white", 
+                       fill = NA, 
+                       size = 4)) 
+
+final.plot
+```
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/pretty-1.png" alt="" width="672" />
+
+## Export your plot
+Finally, export it! Then you can print it, or make it a background. Or treasure it forever as an NFT or something, I don't know. What I did was use these as an emergency Christmas present by making maps of people's homes, which is only creepy if you don't know those people very well or have been otherwise barred from their homes. 
+
+``` r
+ggsave("castle 24x18.jpg", final.plot, dpi = 300, 
+       width = 24, height = 18, units = "in")
+```
+
+
+
+
+# The Code {#custom}
+Wanted just the code with no interruptions? K. Here you go.
+
+``` r
+library(sf) 
+library(ggplot2)
+library(ggnewscale) 
+library(terra)
+library(dplyr)
+```
+
+``` r
+castle  <- rast("LDQ-45122C6/LDQ-45122C6/2014_OLC_Metro/Bare_Earth/bh45122c6")
+```
+
+``` r
+#Clipping box in lat-lon
+growth = .002
+
+xmin1 = -122.671 - 2*growth
+xmax1 =  -122.642 + 2*growth
+ymin1 = 45.293-growth 
+ymax1 = 45.306+growth
+
+# make it a cropping box
+castle_Crop_Lat <- rast(xmin=xmin1, xmax = xmax1, 
+                        ymin = ymin1, ymax = ymax1)
+```
+
+``` r
+# make your cropping box the right projection
+castle_Crop_Box <- project(castle_Crop_Lat, crs(castle))
+
+#now crop the castle lidar
+castle_cropped <- crop(castle, castle_Crop_Box)
+
+
+#project your cropped castle lidar back into 
+#a reasonable projection
+castle1 <- project(castle_cropped,"EPSG:4326")
+```
+
+``` r
+# make it back into a square shape 
+castle2 <- crop(castle1, castle_Crop_Lat)
+```
+
+``` r
+castle.slope <-  terra::terrain(castle2, v= "slope", 
+                                neighbors = 8, unit = "radians")
+castle.asp <-  terra::terrain(castle2, v= "aspect", 
+                              neighbors = 8, unit = "radians")
+```
+
+``` r
+castle.hill <- shade(slope=castle.slope, 
+                     aspect=castle.asp, 
+                     direction = 140)
+```
+
+``` r
+castle3 <- as.data.frame(castle2, xy = TRUE)
+colnames(castle3) <- c("x", "y", "z")
+castle.slope2 <- as.data.frame(castle.slope, xy = TRUE)
+colnames(castle.slope2) <- c("x", "y", "z")
+castle.hill2 <- as.data.frame(castle.hill, xy = TRUE)
+colnames(castle.hill2) <- c("x", "y", "z")
+```
+
+``` r
 hill.plot <- ggplot()+
   geom_raster(data = castle.hill2, aes(x=x, y=y, fill = z))+
   scale_fill_gradient2(low = "black", 
@@ -159,17 +321,12 @@ DEM.plot <- ggplot()+
 DEM.plot +  labs(title = "DEM Plot, Meaghan's Favorite")
 ```
 
-A big part of making these look nice is playing around with the gradient fill component and picking a nice midpoint that makes everything highlighted really well. You can do that by randomly entering numbers or be a bit more methodical by looking at a histogram and picking something slightly higher than the center.
- 
-```{r histo}
+``` r
 hist(castle.hill2$z)
 abline(v = .8, col = "red")
 ```
 
-
-## Plot the Slope Raster
-Now, we add on a slope raster. Red is classic (hence red relief) but you can use other colors here! I'm using some changing transparency as well with the `alpha()` function, to make it so that steeper slopes are both darker and more opaque.
-```{r fullplot}
+``` r
 slope.plot <- DEM.plot +
   new_scale_fill()+
   geom_raster(data = castle.slope2, 
@@ -180,13 +337,7 @@ slope.plot <- DEM.plot +
 slope.plot
 ```
 
-
-## Prettify the Plot
-
-Now, add in the things that make this prettier! That includes clipping the sides of the plot using the **expand** argument, adding a white border to avoid showing off how awkwardly you clipped it, etc. That last bit only matters when you print out the file btw, but I can assure you otherwise the white border your printer chooses will be a seriously mismatched rectangl. 
-
-And of course, this is where you turn off annoying lat/lon coordinates and legend items using theme_void(). Why? Because red relief maps are about vibes, not about specific reconstructions that require you to know what slope percentage exactly you're looking at. 
-```{r pretty}
+``` r
 final.plot <- slope.plot +
   theme_void()+
   theme(legend.position = "none")+
@@ -205,47 +356,7 @@ final.plot <- slope.plot +
 final.plot
 ```
 
-## Export your plot
-Finally, export it! Then you can print it, or make it a background. Or treasure it forever as an NFT or something, I don't know. What I did was use these as an emergency Christmas present by making maps of people's homes, which is only creepy if you don't know those people very well or have been otherwise barred from their homes. 
-```{r export,eval=FALSE}
+``` r
 ggsave("castle 24x18.jpg", final.plot, dpi = 300, 
        width = 24, height = 18, units = "in")
-```
-
-```{r echo=FALSE}
-final.plot2 <- final.plot + labs(title = "Lidar Red Relief Maps") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-ggsave("castle small.jpg", final.plot2, dpi = 300, 
-       width = 4, height = 3, units = "in")
-```
-
-
-# The Code {#custom}
-Wanted just the code with no interruptions? K. Here you go.
-```{r library, eval=FALSE}
-```
-```{r dataimp, eval=FALSE}
-```
-```{r clipbox, eval=FALSE}
-```
-```{r clip, eval=FALSE}
-```
-```{r croptosquare, eval=FALSE}
-```
-```{r slope, eval=FALSE}
-```
-```{r hillshade, eval=FALSE}
-```
-```{r df, eval=FALSE}
-```
-```{r base, eval=FALSE}
-```
-```{r histo, eval=FALSE}
-```
-```{r fullplot, eval=FALSE}
-```
-```{r pretty, eval=FALSE}
-```
-```{r export, eval=FALSE}
 ```
