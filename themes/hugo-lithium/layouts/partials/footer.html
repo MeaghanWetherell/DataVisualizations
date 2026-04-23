@@ -15,5 +15,14 @@
     {{ partial "footer_highlightjs" . }}
     {{ partial "footer_mathjax" . }}
     {{ template "_internal/google_analytics.html" . }}
+{{ if .Params.tags }}
+<div class="tags-footer">
+    <span class="tags-title">Tags:</span>
+    {{ range .Params.tags }}
+    <a href="{{ "tags/" | absURL }}{{ . | urlize }}">#{{ . }}</a>
+    {{ end }}
+</div>
+{{ end }}
+
   </body>
 </html>

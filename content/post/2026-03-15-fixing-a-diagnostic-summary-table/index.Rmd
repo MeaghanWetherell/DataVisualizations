@@ -208,7 +208,7 @@ There are plenty of other ways to make this table a bit more efficient, but they
 *  Similarly, give us number ranges for the track sizes
 *  Turn long words like plantigrade into acronyms
 *  Primates didn't live in Washington in the Miocene, so that can be dropped.
-*  There's no way you thought that this was an elephant. It had visible toes. Drop.
+*  There's no way you thought that this was an elephant. It had visible toes and wasn't enormous. Drop.
 *  You actually can count the toes on the large ichnities. So that one can be a number too.
 *  If you really wanted to get fancy, you could include pictures of the tracks on this table too for each taxon.
 *  You can color-code the cells according to how well they match your taxa. This is easier if your table only has one taxon to identify though. 
@@ -216,7 +216,7 @@ There are plenty of other ways to make this table a bit more efficient, but they
 # References
 Kaler, Keith L. "Early Miocene trace fossils from southwest Washington." Washington Geology 26.2 (1998): 3.
 
-https://towardsdatascience.com/exploring-the-gt-grammar-of-tables-package-in-r-7fff9d0b40cd
+
 
 
 # The Code
