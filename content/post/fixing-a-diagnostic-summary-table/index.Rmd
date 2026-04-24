@@ -40,6 +40,8 @@ library(reshape2)
 library(rphylopic)
 ```
 
+# Data
+I took the data and put three variants of it into an excel spreadsheet that you can use to follow along. You can download [Kalar 1998.xlsx](https://github.com/MeaghanWetherell/DataVisualizations/blob/main/static/Data/Kalar 1998.xlsx) on Github.<img src="/img/GithubDownloadSmall.png" alt="Github download icon" style="float: right; margin-left: 10px;" width="100"> If you haven't downloaded something from Github before, look for the little download icon on the right hand side of the screen and download the 'raw' file. 
 
 # Download Phylopics
 To select a phylopic for each taxa you need to find the id number, download the phylopic and then, for this table, save that picture as a .png file to your desktop. That also means that if you want to make your own image, you can just skip the phylopic steps and use your own png file. Here's an example of how to do that using horses as our representative perissodactyl. As you might expect, there are a lot of horses on phylopic. People have been drawing those for a long, long time. So let's take a look at the first 3 and decide which one we like the best.
@@ -96,7 +98,8 @@ for(i in 1:length(images$ID)){
 
 # Basic Table Setup
 
-I've gone ahead and copied the original data into a spreadsheet, which you can download to use on your own. 
+The original data is in the first sheet of this spreadsheet, with x's instead of dots. Use `read_xlsx()` and set the sheet to either be 1 or "OG", which is the very good title I gave that sheet.
+
 ```{r Kt1}
 Kt1 <- read_xlsx("Kalar 1998.xlsx", sheet = 1)
 ```
