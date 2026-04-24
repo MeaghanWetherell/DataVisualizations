@@ -15,18 +15,18 @@ In this blog post, I'll show you how to transform a diagnostic summary table usi
 
 <center>
 <div style="display: flex-container;">
-  <img src="/img/kalar1998.jpg" style="width: 30%;">
-  <img src="/img/arrowgreytall.png" style = "width: 6.5%;">
-  <img src="A Pretty Picture Of a Table.png" style="width: 35%;">
+  <img src="/img/kalar1998.jpg" style="width: 15%;">
+  <img src="/img/arrowgreytall.png" style = "width: 3%;">
+  <img src="A Pretty Picture Of a Table.png" style="width: 17%;">
 </div>
 </center>
 
 # Introduction
-Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and nots whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a **Diagnostic Summary Table**, which when done well can communicate quickly and clearly your decision making. 
+Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and nots whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a **Diagnostic Summary Table**, which when done well can communicate quickly and clearly your decision making. <img src="/img/kalar1998.jpg" alt="Diagnostic summary table with table notes the length of the whole table." style="float: right; margin-left: 10px;" width="541"> 
 
 I'm going to take a table that already exists and work to make it better because I think a good rule of thumb is that if your caption and table notes are longer than your actual table... you probably are doing something wrong in your table formatting.
 
-<img src="/img/kalar1998.jpg" alt="Diagnostic summary table with table notes the length of the whole table." style="float: right; margin-left: 10px;" width="541"> 
+
 
 This table is from Kalar's 1998 paper, "Early Miocene Trace Fossils from Southwest Washington." Kalar was trying to identify two different types of fossil tracks - one very small track ("small ichnites") which turned out be a rodent and one larger one ("large ichnites") that turned out to be a dog. 
 
