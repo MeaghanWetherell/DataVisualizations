@@ -10,8 +10,8 @@ permalinks:
   post: /:year/:month/:day/:slug/
 menu:
   main:
-    - name: R Blog
-      url: /
+    - name: Blog Categories
+      url: /Tags/
     - name: About
       url: /about/
     - name: Personal Website
