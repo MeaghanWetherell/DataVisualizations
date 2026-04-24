@@ -4,26 +4,33 @@ author: 'Meaghan Wetherell'
 date: '2026-04-23'
 slug: fixing-a-diagnostic-summary-table
 categories: ["Revisions"]
-tags: ["tables"]
+tags: ["tables", "rphylopic"]
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message=FALSE, fig.align = 'center')
 ```
+# Preview
+In this blog post, I'll show you how to transform a diagnostic summary table using `rphylopic`, `gt`, and some suggested style modifications.
+
+<center>
+<div style="display: flex-container;">
+  <img src="/img/kalar1998.jpg" style="width: 30%;">
+  <img src="/img/arrowgreytall.png" style = "width: 6.5%;">
+  <img src="A Pretty Picture Of a Table.png" style="width: 35%;">
+</div>
+</center>
 
 # Introduction
-Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and not whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a **Diagnostic Summary Table**, which when done well can communicate quickly and clearly your decision making. 
+Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and nots whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a **Diagnostic Summary Table**, which when done well can communicate quickly and clearly your decision making. 
 
-I'm going to take a table that already exists and work to fix it. Now to be very clear, I am very glad that the authors included this table - it's still much clearer than a long section of systematic paleontology. That said, I think a good rule of thumb is that if your caption and table notes are longer than your actual table... you probably are doing something wrong. 
+I'm going to take a table that already exists and work to make it better because I think a good rule of thumb is that if your caption and table notes are longer than your actual table... you probably are doing something wrong in your table formatting.
 
-So let's take a look at a figure from K. Kalar's 1998 paper, "Early Miocene Trace Fossils from Southwest Washington." Kalar was trying to identify two different types of fossil tracks - one very small track ("small ichnites") and one larger one ("large ichnites"). As a spoiler alert, Kalar concluded the small ichnites was from a rodent-like animal, and the larger one was from a large mammalian carnivore, something like a dog or cat.
+<img src="/img/kalar1998.jpg" alt="Diagnostic summary table with table notes the length of the whole table." style="float: right; margin-left: 10px;" width="541"> 
 
-```{r, echo=FALSE, out.width='100%'}
-knitr::include_graphics("kalar 1998.jpg")
-```
+This table is from Kalar's 1998 paper, "Early Miocene Trace Fossils from Southwest Washington." Kalar was trying to identify two different types of fossil tracks - one very small track ("small ichnites") which turned out be a rodent and one larger one ("large ichnites") that turned out to be a dog. 
 
-
-Now, why are the table notes so insane? Partly because this is a paleontology paper published in a geology journal, and I imagine someone really wanted to make sure the readers didn't have to google what a primate or a perissodactyl was. But you know what would be a lot faster than that? Pictures. Which is why this walkthrough will show you how to:
+These table notes are probably insane because this is a paleontology paper published in a geology journal, and I imagine someone really wanted to make sure the readers didn't have to google what a primate or a perissodactyl was. But you know what would be a lot faster than that? Pictures. Which is why this walkthrough will show you how to:
 
 *  Use silhouette images in tables via the package `rphylopic`
 *  Create and modify tables in R using the package `gt`
@@ -32,12 +39,11 @@ Now, why are the table notes so insane? Partly because this is a paleontology pa
 # Packages
 All of these packages are on the Cran server and can be installed using `install.packages()`.
 ```{r packages}
-library(readxl)
-library(gt)
-library(ggplot2)
-library(dplyr)
-library(reshape2)
-library(rphylopic)
+library(readxl) #Import excel data
+library(gt) # Make nice tables
+library(dplyr) # Data manipulation
+library(reshape2) # Data manipulation
+library(rphylopic) # Pretty Pony Pictures
 ```
 
 # Data
@@ -52,6 +58,7 @@ h2 <- get_phylopic(uuid = uuid.var[2])
 h3 <- get_phylopic(uuid = uuid.var[3])
 ```
 ```{r ponies, echo=FALSE, fig.align='center', fig.height=1}
+library(ggplot2)
 # This code is not in the walkthrough
 # But it is how I made the graphic of the three regal horses next to one another
 df <- data.frame(x = c(1, 2, 3),
@@ -202,6 +209,9 @@ If you've gotten this far you might want to export your beautiful summary table.
 
 ```{r save, eval=FALSE}
 gtsave(wow, "A Pretty Table.docx")
+```
+```{r echo=FALSE}
+gtsave(wow, "A Pretty Picture Of a Table.png")
 ```
 
 # A few other recommendations

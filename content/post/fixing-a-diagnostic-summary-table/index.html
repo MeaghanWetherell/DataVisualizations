@@ -4,18 +4,29 @@ author: 'Meaghan Wetherell'
 date: '2026-04-23'
 slug: fixing-a-diagnostic-summary-table
 categories: ["Revisions"]
-tags: ["tables"]
+tags: ["tables", "rphylopic"]
 ---
 
 
 
+<div id="preview" class="section level1">
+<h1>Preview</h1>
+<p>In this blog post, I’ll show you how to transform a diagnostic summary table using <code>rphylopic</code>, <code>gt</code>, and some suggested style modifications.</p>
+<center>
+<div style="display: flex-container;">
+<p><img src="/img/kalar1998.jpg" style="width: 30%;">
+<img src="/img/arrowgreytall.png" style = "width: 6.5%;">
+<img src="A%20Pretty%20Picture%20Of%20a%20Table.png" style="width: 35%;"></p>
+</div>
+</center>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and not whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a <strong>Diagnostic Summary Table</strong>, which when done well can communicate quickly and clearly your decision making.</p>
-<p>I’m going to take a table that already exists and work to fix it. Now to be very clear, I am very glad that the authors included this table - it’s still much clearer than a long section of systematic paleontology. That said, I think a good rule of thumb is that if your caption and table notes are longer than your actual table… you probably are doing something wrong.</p>
-<p>So let’s take a look at a figure from K. Kalar’s 1998 paper, “Early Miocene Trace Fossils from Southwest Washington.” Kalar was trying to identify two different types of fossil tracks - one very small track (“small ichnites”) and one larger one (“large ichnites”). As a spoiler alert, Kalar concluded the small ichnites was from a rodent-like animal, and the larger one was from a large mammalian carnivore, something like a dog or cat.</p>
-<p><img src="kalar%201998.jpg" alt="" width="100%" style="display: block; margin: auto;" /></p>
-<p>Now, why are the table notes so insane? Partly because this is a paleontology paper published in a geology journal, and I imagine someone really wanted to make sure the readers didn’t have to google what a primate or a perissodactyl was. But you know what would be a lot faster than that? Pictures. Which is why this walkthrough will show you how to:</p>
+<p>Paleontologists have to talk a lot about different pieces of anatomy and communicate why we think a fossil is what we say it is, and nots whatever weird side quest reviewer 2 tried to tell us it was. One of the most efficient and underused ways of doing this is what I like to call a <strong>Diagnostic Summary Table</strong>, which when done well can communicate quickly and clearly your decision making.</p>
+<p>I’m going to take a table that already exists and work to make it better because I think a good rule of thumb is that if your caption and table notes are longer than your actual table… you probably are doing something wrong in your table formatting.</p>
+<p><img src="/img/kalar1998.jpg" alt="Diagnostic summary table with table notes the length of the whole table." style="float: right; margin-left: 10px;" width="541"></p>
+<p>This table is from Kalar’s 1998 paper, “Early Miocene Trace Fossils from Southwest Washington.” Kalar was trying to identify two different types of fossil tracks - one very small track (“small ichnites”) which turned out be a rodent and one larger one (“large ichnites”) that turned out to be a dog.</p>
+<p>These table notes are probably insane because this is a paleontology paper published in a geology journal, and I imagine someone really wanted to make sure the readers didn’t have to google what a primate or a perissodactyl was. But you know what would be a lot faster than that? Pictures. Which is why this walkthrough will show you how to:</p>
 <ul>
 <li>Use silhouette images in tables via the package <code>rphylopic</code></li>
 <li>Create and modify tables in R using the package <code>gt</code></li>
@@ -25,12 +36,11 @@ tags: ["tables"]
 <div id="packages" class="section level1">
 <h1>Packages</h1>
 <p>All of these packages are on the Cran server and can be installed using <code>install.packages()</code>.</p>
-<pre class="r"><code>library(readxl)
-library(gt)
-library(ggplot2)
-library(dplyr)
-library(reshape2)
-library(rphylopic)</code></pre>
+<pre class="r"><code>library(readxl) #Import excel data
+library(gt) # Make nice tables
+library(dplyr) # Data manipulation
+library(reshape2) # Data manipulation
+library(rphylopic) # Pretty Pony Pictures</code></pre>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
@@ -58,23 +68,23 @@ Kt2[is.na(Kt2)] &lt;- &quot;&quot; #as NAs are annoying to look at in a table.
 
 Kt2 %&gt;% 
   gt() #this makes it a gt table</code></pre>
-<div id="jkjzhlmtxm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#jkjzhlmtxm table {
+<div id="lsnssozvct" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lsnssozvct table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#jkjzhlmtxm thead, #jkjzhlmtxm tbody, #jkjzhlmtxm tfoot, #jkjzhlmtxm tr, #jkjzhlmtxm td, #jkjzhlmtxm th {
+#lsnssozvct thead, #lsnssozvct tbody, #lsnssozvct tfoot, #lsnssozvct tr, #lsnssozvct td, #lsnssozvct th {
   border-style: none;
 }
 
-#jkjzhlmtxm p {
+#lsnssozvct p {
   margin: 0;
   padding: 0;
 }
 
-#jkjzhlmtxm .gt_table {
+#lsnssozvct .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -100,12 +110,12 @@ Kt2 %&gt;%
   border-left-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_caption {
+#lsnssozvct .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#jkjzhlmtxm .gt_title {
+#lsnssozvct .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -117,7 +127,7 @@ Kt2 %&gt;%
   border-bottom-width: 0;
 }
 
-#jkjzhlmtxm .gt_subtitle {
+#lsnssozvct .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -129,7 +139,7 @@ Kt2 %&gt;%
   border-top-width: 0;
 }
 
-#jkjzhlmtxm .gt_heading {
+#lsnssozvct .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -141,13 +151,13 @@ Kt2 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_bottom_border {
+#lsnssozvct .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_col_headings {
+#lsnssozvct .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -162,7 +172,7 @@ Kt2 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_col_heading {
+#lsnssozvct .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -182,7 +192,7 @@ Kt2 %&gt;%
   overflow-x: hidden;
 }
 
-#jkjzhlmtxm .gt_column_spanner_outer {
+#lsnssozvct .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -194,15 +204,15 @@ Kt2 %&gt;%
   padding-right: 4px;
 }
 
-#jkjzhlmtxm .gt_column_spanner_outer:first-child {
+#lsnssozvct .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#jkjzhlmtxm .gt_column_spanner_outer:last-child {
+#lsnssozvct .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#jkjzhlmtxm .gt_column_spanner {
+#lsnssozvct .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -214,11 +224,11 @@ Kt2 %&gt;%
   width: 100%;
 }
 
-#jkjzhlmtxm .gt_spanner_row {
+#lsnssozvct .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#jkjzhlmtxm .gt_group_heading {
+#lsnssozvct .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -244,7 +254,7 @@ Kt2 %&gt;%
   text-align: left;
 }
 
-#jkjzhlmtxm .gt_empty_group_heading {
+#lsnssozvct .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -259,15 +269,15 @@ Kt2 %&gt;%
   vertical-align: middle;
 }
 
-#jkjzhlmtxm .gt_from_md > :first-child {
+#lsnssozvct .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#jkjzhlmtxm .gt_from_md > :last-child {
+#lsnssozvct .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#jkjzhlmtxm .gt_row {
+#lsnssozvct .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -286,7 +296,7 @@ Kt2 %&gt;%
   overflow-x: hidden;
 }
 
-#jkjzhlmtxm .gt_stub {
+#lsnssozvct .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -299,7 +309,7 @@ Kt2 %&gt;%
   padding-right: 5px;
 }
 
-#jkjzhlmtxm .gt_stub_row_group {
+#lsnssozvct .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -313,15 +323,15 @@ Kt2 %&gt;%
   vertical-align: top;
 }
 
-#jkjzhlmtxm .gt_row_group_first td {
+#lsnssozvct .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#jkjzhlmtxm .gt_row_group_first th {
+#lsnssozvct .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#jkjzhlmtxm .gt_summary_row {
+#lsnssozvct .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -331,16 +341,16 @@ Kt2 %&gt;%
   padding-right: 5px;
 }
 
-#jkjzhlmtxm .gt_first_summary_row {
+#lsnssozvct .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_first_summary_row.thick {
+#lsnssozvct .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#jkjzhlmtxm .gt_last_summary_row {
+#lsnssozvct .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -350,7 +360,7 @@ Kt2 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_grand_summary_row {
+#lsnssozvct .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -360,7 +370,7 @@ Kt2 %&gt;%
   padding-right: 5px;
 }
 
-#jkjzhlmtxm .gt_first_grand_summary_row {
+#lsnssozvct .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -370,7 +380,7 @@ Kt2 %&gt;%
   border-top-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_last_grand_summary_row_top {
+#lsnssozvct .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -380,11 +390,11 @@ Kt2 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_striped {
+#lsnssozvct .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#jkjzhlmtxm .gt_table_body {
+#lsnssozvct .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -393,7 +403,7 @@ Kt2 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_footnotes {
+#lsnssozvct .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -407,7 +417,7 @@ Kt2 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_footnote {
+#lsnssozvct .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -416,7 +426,7 @@ Kt2 %&gt;%
   padding-right: 5px;
 }
 
-#jkjzhlmtxm .gt_sourcenotes {
+#lsnssozvct .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -430,7 +440,7 @@ Kt2 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#jkjzhlmtxm .gt_sourcenote {
+#lsnssozvct .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -438,72 +448,72 @@ Kt2 %&gt;%
   padding-right: 5px;
 }
 
-#jkjzhlmtxm .gt_left {
+#lsnssozvct .gt_left {
   text-align: left;
 }
 
-#jkjzhlmtxm .gt_center {
+#lsnssozvct .gt_center {
   text-align: center;
 }
 
-#jkjzhlmtxm .gt_right {
+#lsnssozvct .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#jkjzhlmtxm .gt_font_normal {
+#lsnssozvct .gt_font_normal {
   font-weight: normal;
 }
 
-#jkjzhlmtxm .gt_font_bold {
+#lsnssozvct .gt_font_bold {
   font-weight: bold;
 }
 
-#jkjzhlmtxm .gt_font_italic {
+#lsnssozvct .gt_font_italic {
   font-style: italic;
 }
 
-#jkjzhlmtxm .gt_super {
+#lsnssozvct .gt_super {
   font-size: 65%;
 }
 
-#jkjzhlmtxm .gt_footnote_marks {
+#lsnssozvct .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#jkjzhlmtxm .gt_asterisk {
+#lsnssozvct .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#jkjzhlmtxm .gt_indent_1 {
+#lsnssozvct .gt_indent_1 {
   text-indent: 5px;
 }
 
-#jkjzhlmtxm .gt_indent_2 {
+#lsnssozvct .gt_indent_2 {
   text-indent: 10px;
 }
 
-#jkjzhlmtxm .gt_indent_3 {
+#lsnssozvct .gt_indent_3 {
   text-indent: 15px;
 }
 
-#jkjzhlmtxm .gt_indent_4 {
+#lsnssozvct .gt_indent_4 {
   text-indent: 20px;
 }
 
-#jkjzhlmtxm .gt_indent_5 {
+#lsnssozvct .gt_indent_5 {
   text-indent: 25px;
 }
 
-#jkjzhlmtxm .katex-display {
+#lsnssozvct .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#jkjzhlmtxm div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#lsnssozvct div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -611,23 +621,23 @@ Kt3 &lt;- Kt2.Wide %&gt;%
 
 Kt3 %&gt;%
   gt()</code></pre>
-<div id="pmmielhinb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pmmielhinb table {
+<div id="vismkpirca" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vismkpirca table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pmmielhinb thead, #pmmielhinb tbody, #pmmielhinb tfoot, #pmmielhinb tr, #pmmielhinb td, #pmmielhinb th {
+#vismkpirca thead, #vismkpirca tbody, #vismkpirca tfoot, #vismkpirca tr, #vismkpirca td, #vismkpirca th {
   border-style: none;
 }
 
-#pmmielhinb p {
+#vismkpirca p {
   margin: 0;
   padding: 0;
 }
 
-#pmmielhinb .gt_table {
+#vismkpirca .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -653,12 +663,12 @@ Kt3 %&gt;%
   border-left-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_caption {
+#vismkpirca .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pmmielhinb .gt_title {
+#vismkpirca .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -670,7 +680,7 @@ Kt3 %&gt;%
   border-bottom-width: 0;
 }
 
-#pmmielhinb .gt_subtitle {
+#vismkpirca .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -682,7 +692,7 @@ Kt3 %&gt;%
   border-top-width: 0;
 }
 
-#pmmielhinb .gt_heading {
+#vismkpirca .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -694,13 +704,13 @@ Kt3 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_bottom_border {
+#vismkpirca .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_col_headings {
+#vismkpirca .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -715,7 +725,7 @@ Kt3 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_col_heading {
+#vismkpirca .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -735,7 +745,7 @@ Kt3 %&gt;%
   overflow-x: hidden;
 }
 
-#pmmielhinb .gt_column_spanner_outer {
+#vismkpirca .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -747,15 +757,15 @@ Kt3 %&gt;%
   padding-right: 4px;
 }
 
-#pmmielhinb .gt_column_spanner_outer:first-child {
+#vismkpirca .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pmmielhinb .gt_column_spanner_outer:last-child {
+#vismkpirca .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pmmielhinb .gt_column_spanner {
+#vismkpirca .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -767,11 +777,11 @@ Kt3 %&gt;%
   width: 100%;
 }
 
-#pmmielhinb .gt_spanner_row {
+#vismkpirca .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pmmielhinb .gt_group_heading {
+#vismkpirca .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -797,7 +807,7 @@ Kt3 %&gt;%
   text-align: left;
 }
 
-#pmmielhinb .gt_empty_group_heading {
+#vismkpirca .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -812,15 +822,15 @@ Kt3 %&gt;%
   vertical-align: middle;
 }
 
-#pmmielhinb .gt_from_md > :first-child {
+#vismkpirca .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pmmielhinb .gt_from_md > :last-child {
+#vismkpirca .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pmmielhinb .gt_row {
+#vismkpirca .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -839,7 +849,7 @@ Kt3 %&gt;%
   overflow-x: hidden;
 }
 
-#pmmielhinb .gt_stub {
+#vismkpirca .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -852,7 +862,7 @@ Kt3 %&gt;%
   padding-right: 5px;
 }
 
-#pmmielhinb .gt_stub_row_group {
+#vismkpirca .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -866,15 +876,15 @@ Kt3 %&gt;%
   vertical-align: top;
 }
 
-#pmmielhinb .gt_row_group_first td {
+#vismkpirca .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pmmielhinb .gt_row_group_first th {
+#vismkpirca .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pmmielhinb .gt_summary_row {
+#vismkpirca .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -884,16 +894,16 @@ Kt3 %&gt;%
   padding-right: 5px;
 }
 
-#pmmielhinb .gt_first_summary_row {
+#vismkpirca .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_first_summary_row.thick {
+#vismkpirca .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pmmielhinb .gt_last_summary_row {
+#vismkpirca .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -903,7 +913,7 @@ Kt3 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_grand_summary_row {
+#vismkpirca .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -913,7 +923,7 @@ Kt3 %&gt;%
   padding-right: 5px;
 }
 
-#pmmielhinb .gt_first_grand_summary_row {
+#vismkpirca .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -923,7 +933,7 @@ Kt3 %&gt;%
   border-top-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_last_grand_summary_row_top {
+#vismkpirca .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -933,11 +943,11 @@ Kt3 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_striped {
+#vismkpirca .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pmmielhinb .gt_table_body {
+#vismkpirca .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -946,7 +956,7 @@ Kt3 %&gt;%
   border-bottom-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_footnotes {
+#vismkpirca .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -960,7 +970,7 @@ Kt3 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_footnote {
+#vismkpirca .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -969,7 +979,7 @@ Kt3 %&gt;%
   padding-right: 5px;
 }
 
-#pmmielhinb .gt_sourcenotes {
+#vismkpirca .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -983,7 +993,7 @@ Kt3 %&gt;%
   border-right-color: #D3D3D3;
 }
 
-#pmmielhinb .gt_sourcenote {
+#vismkpirca .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -991,72 +1001,72 @@ Kt3 %&gt;%
   padding-right: 5px;
 }
 
-#pmmielhinb .gt_left {
+#vismkpirca .gt_left {
   text-align: left;
 }
 
-#pmmielhinb .gt_center {
+#vismkpirca .gt_center {
   text-align: center;
 }
 
-#pmmielhinb .gt_right {
+#vismkpirca .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pmmielhinb .gt_font_normal {
+#vismkpirca .gt_font_normal {
   font-weight: normal;
 }
 
-#pmmielhinb .gt_font_bold {
+#vismkpirca .gt_font_bold {
   font-weight: bold;
 }
 
-#pmmielhinb .gt_font_italic {
+#vismkpirca .gt_font_italic {
   font-style: italic;
 }
 
-#pmmielhinb .gt_super {
+#vismkpirca .gt_super {
   font-size: 65%;
 }
 
-#pmmielhinb .gt_footnote_marks {
+#vismkpirca .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pmmielhinb .gt_asterisk {
+#vismkpirca .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pmmielhinb .gt_indent_1 {
+#vismkpirca .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pmmielhinb .gt_indent_2 {
+#vismkpirca .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pmmielhinb .gt_indent_3 {
+#vismkpirca .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pmmielhinb .gt_indent_4 {
+#vismkpirca .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pmmielhinb .gt_indent_5 {
+#vismkpirca .gt_indent_5 {
   text-indent: 25px;
 }
 
-#pmmielhinb .katex-display {
+#vismkpirca .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#pmmielhinb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vismkpirca div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1168,7 +1178,7 @@ Kt3 %&gt;%
   fmt_image(columns = Icon,
             rows = c(1:9)) %&gt;%
   as_raw_html() #this is to make it look nice on blogdown, you can drop otherwise</code></pre>
-<div id="kbulrrerou" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="mnrllalcmg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 16px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
@@ -1307,7 +1317,7 @@ Kt3 %&gt;%
   cols_label(Icon = &quot;&quot;)
   
 as_raw_html(wow) # use as_raw_html() otherwise it does not look nice on blogdown</code></pre>
-<div id="dzrrvrifsc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="zhlemgwofx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
   
   <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false" style="-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'; display: table; border-collapse: collapse; line-height: normal; margin-left: auto; margin-right: auto; color: #333333; font-size: 10px; font-weight: normal; font-style: normal; background-color: #FFFFFF; width: auto; border-top-style: solid; border-top-width: 2px; border-top-color: #A8A8A8; border-right-style: none; border-right-width: 2px; border-right-color: #D3D3D3; border-bottom-style: solid; border-bottom-width: 2px; border-bottom-color: #A8A8A8; border-left-style: none; border-left-width: 2px; border-left-color: #D3D3D3;" bgcolor="#FFFFFF">
   <thead style="border-style: none;">
@@ -1435,12 +1445,11 @@ as_raw_html(wow) # use as_raw_html() otherwise it does not look nice on blogdown
 </div>
 <div id="the-code" class="section level1">
 <h1>The Code</h1>
-<pre class="r"><code>library(readxl)
-library(gt)
-library(ggplot2)
-library(dplyr)
-library(reshape2)
-library(rphylopic)</code></pre>
+<pre class="r"><code>library(readxl) #Import excel data
+library(gt) # Make nice tables
+library(dplyr) # Data manipulation
+library(reshape2) # Data manipulation
+library(rphylopic) # Pretty Pony Pictures</code></pre>
 <pre class="r"><code>uuid.var &lt;- get_uuid(name = &quot;horse&quot;, n = 3)
 h1 &lt;- get_phylopic(uuid = uuid.var[1])
 h2 &lt;- get_phylopic(uuid = uuid.var[2])
@@ -1505,7 +1514,8 @@ as_raw_html(wow) # use as_raw_html() otherwise it does not look nice on blogdown
 <div id="code-not-in-the-walkthrough" class="section level1">
 <h1>Code Not In The Walkthrough</h1>
 <p>Some of the stuff I showed you in the walkthrough I didn’t actually provide code for because it was too slow or overly complicated. But if you want a fast way to pull all the png files, or if you want to make a gpplot of pony pics, here ya go.</p>
-<pre class="r"><code># This code is not in the walkthrough
+<pre class="r"><code>library(ggplot2)
+# This code is not in the walkthrough
 # But it is how I made the graphic of the three regal horses next to one another
 df &lt;- data.frame(x = c(1, 2, 3),
                  y = c(1, 1, 1),
