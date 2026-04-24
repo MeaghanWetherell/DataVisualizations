@@ -18,7 +18,7 @@ I'm going to take a table that already exists and work to fix it. Now to be very
 
 So let's take a look at a figure from K. Kalar's 1998 paper, "Early Miocene Trace Fossils from Southwest Washington." Kalar was trying to identify two different types of fossil tracks - one very small track ("small ichnites") and one larger one ("large ichnites"). As a spoiler alert, Kalar concluded the small ichnites was from a rodent-like animal, and the larger one was from a large mammalian carnivore, something like a dog or cat.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width='100%'}
 knitr::include_graphics("kalar 1998.jpg")
 ```
 
