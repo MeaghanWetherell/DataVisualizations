@@ -8,8 +8,13 @@ tags: ["maps", "lidar"]
 ---
 
 
-<img src="castle small.jpg" alt="" width="600" style="display: block; margin: auto;" />
- Want just the code? [Skip to the bottom!](#custom)
+
+# Preview
+In this post I'll show you how to make a red relief map using lidar data, `ggnewscale`, `ggplot2`, `sf`, and `terra`.
+
+<img src="castle small.jpg" alt="" width="40%" style="display: block; margin: auto;" />
+
+Want just the code? [Skip to the bottom!](#custom)
 
 # Introduction
 First, some terminology!

@@ -1,0 +1,41 @@
+---
+title: Why ggplot2's default color palette is bad
+date: '2026-04-24'
+slug: why-ggplot2-s-default-color-palette-is-bad
+categories: ["ggplot2"]
+tags: ["ggplot2", "colorblindness"]
+---
+
+
+
+<div id="preview" class="section level1">
+<h1>Preview</h1>
+<p>You don’t want to make colorblind unfriendly garbage do you? No? Great, let me show you why ggplot2’s default color palette is exactly that, using the package <code>colorBlindness</code>.</p>
+<p>Want just the code? <a href="#custom">Skip to the bottom!</a></p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+</div>
+<div id="packages" class="section level1">
+<h1>Packages</h1>
+<pre class="r"><code>library(colorBlindness)
+library(ggplot2)</code></pre>
+</div>
+<div id="fake-data" class="section level1">
+<h1>Fake Data</h1>
+<p>#This is very easy to do with ggplot objects
+#create a ggplot
+plot1 &lt;- ggplot(data = iris, aes(x = Sepal.Length, fill = Species))+
+geom_histogram()
+#create a simulation of the colorblindness
+cvdPlot(plot1)
+```</p>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<p><a href="https://cran.r-project.org/web/packages/colorBlindness/vignettes/colorBlindness.html" class="uri">https://cran.r-project.org/web/packages/colorBlindness/vignettes/colorBlindness.html</a></p>
+</div>
+<div id="custom" class="section level1">
+<h1>The Code</h1>
+<p>Wanted just the code with no interruptions? K. Here you go.</p>
+</div>

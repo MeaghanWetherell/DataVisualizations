@@ -1,16 +1,20 @@
 ---
-title: How to Make A Lidar Red Relief Map
+title: How to Make a Lidar Red Relief Map
 author: 'Dr. Meaghan Wetherell'
 date: '2026-03-10'
 slug: lidar-red-relief-map
-categories: []
-tags: []
+categories: ["Maps"]
+tags: ["maps", "lidar"]
 ---
 
 
 
+<div id="preview" class="section level1">
+<h1>Preview</h1>
+<p>In this post I’ll show you how to make a red relief map using lidar data, <code>ggnewscale</code>, <code>ggplot2</code>, <code>sf</code>, and <code>terra</code>.</p>
 <p><img src="castle%20small.jpg" alt="" width="600" style="display: block; margin: auto;" />
 Want just the code? <a href="#custom">Skip to the bottom!</a></p>
+</div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>First, some terminology!</p>
@@ -21,7 +25,7 @@ Want just the code? <a href="#custom">Skip to the bottom!</a></p>
 <div id="wait-where-do-i-get-lidar-data" class="section level1">
 <h1>Wait where do I get lidar data?</h1>
 <p>Lidar is freely available for lots of places. You can find good lidar coverage and ways to download it using the <a href="https://apps.nationalmap.gov/downloader/">National Map Downloader</a>. As a hint, don’t forget to select your map extent and then hit search products once you’ve figured out what you want to download. Somehow that was not obvious when I was first using it.</p>
-<p>When I was testing this, I used lidar from Washington, Oregon, and Utah. And let me tell you, I now have some preferences for storage of that data… and that preference is to not do what Oregon is doing. Oregon lidar is downloaded in giant, weird packages. It was hard to figure out exactly what subset of the lidar you want. I’ll post a separate tutorial on that at some point.</p>
+<p>When I was testing this, I used lidar from Washington, Oregon, and Utah. And let me tell you, I now have some preferences for storage of that data… and that preference is to not do what Oregon is doing. Oregon lidar is downloaded in giant, weird packages. It was hard to figure out exactly what subset of the lidar you want. I’ll post a separate tutorial on that at some point once I’ve finally emotionally recovered from having to figure it out in the first place.</p>
 </div>
 <div id="required-packages" class="section level1">
 <h1>Required Packages</h1>

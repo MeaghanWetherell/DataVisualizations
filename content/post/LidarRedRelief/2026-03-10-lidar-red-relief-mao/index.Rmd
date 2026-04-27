@@ -10,10 +10,15 @@ tags: ["maps", "lidar"]
 ```{r setup, include=FALSE,}
 knitr::opts_chunk$set(warning = FALSE, message=FALSE)
 ```
-```{r fig.align='center', echo=FALSE}
+
+# Preview
+In this post I'll show you how to make a red relief map using lidar data, `ggnewscale`, `ggplot2`, `sf`, and `terra`.
+
+```{r fig.align='center', echo=FALSE, out.width="40%"}
 knitr::include_graphics("castle small.jpg")
 ```
- Want just the code? [Skip to the bottom!](#custom)
+
+Want just the code? [Skip to the bottom!](#custom)
 
 # Introduction
 First, some terminology!
