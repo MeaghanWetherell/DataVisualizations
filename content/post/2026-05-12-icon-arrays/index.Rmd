@@ -103,7 +103,9 @@ ggplot(waffle_data, aes(x, y, fill = group)) +
   mysettings
 ```
 
-So that's the basic icon array, but dots are deeply boring so let's try some with actual icons!
+You might also notice some fun disappearing light colored blogs or dots at the interesection of each of these lines here. That's known as the **Hermann grid illusion** and it is one of the reasons I don't particularly like waffle plots.
+
+So that's the basic icon array, but dots and squares are deeply boring so let's try some with actual icons!
 
 # Option 2: Icon Arrays Using emojifont
 This package can be great... provided you either want to use the same icon over and over again, or all your chosen icons are common emojis. In my case, there's only one sheep emoji. To see what emojis are present for that word, you can use the `search_emoji()` function, e.g.: 
@@ -169,7 +171,7 @@ This one is not my favorite method because I could not get it to register most o
 ```{r code16}
 ggplot(waffle_data, aes(x, y, color = group)) + 
   geom_text(aes(label=fontawesome("fa-paw")), 
-            family='fontawesome-webfont', size=6) +
+            family='fontawesome-webfont', size=10) +
   mysettings
 ```
 
