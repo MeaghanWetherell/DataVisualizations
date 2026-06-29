@@ -121,7 +121,9 @@ This package can be great... provided you either want to use the same icon over 
 emoji(search_emoji("sheep"))
 ```
 
-To use the `emojifont` package, you have to switch from `geom_point()` to `geom_text()`. That means that you will need a column that has the emoji in question. In my case because I'm just using one emoji it's not so important but if you have more than one, you'll want this column for sure. Then, use `geom_text()` and be sure to specify both the label (in the `aes()` function) and the font family.
+To use the `emojifont` package, you have to switch from `geom_point()` to `geom_text()`. That means that you will need a column that has the emoji in question. In my case because I'm just using one emoji it's not so important but if you have more than one, you'll want this column for sure. Then, use `geom_text()` and be sure to specify both the label (in the `aes()` function) and the font family. 
+
+I did have some issues with half sheep because `geom_text()` doesn't automatically center the labels, so you might need to use *nudge_x* or *nudge_y*, or add the expansion function in `scale_y_discrete()`.
 
 
 ``` r
@@ -129,13 +131,16 @@ waffle_data1 <- waffle_data %>%
   mutate(label = emoji("sheep"))
 
 ggplot(waffle_data1, aes(x, y, color = group)) + 
-  geom_text(aes(label=label), family = "EmojiOne", size=14) +
-  mysettings
+  geom_text(aes(label=label), family = "EmojiOne", 
+            size=10, 
+            nudge_y = .25) + #this centered the emojis better
+  mysettings +
+  scale_y_discrete(expand=c(0,1)) #this also helped with clipping
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/code11-1.png" alt="" width="672" style="display: block; margin: auto;" />
 
-And there you have it, a very difficult to see and read plot about sheep sexuality. Unfortunately I could not find a way to bold the emojis, so instead I decided to try a few other methods.
+And there you have it, a very difficult to see and read plot about sheep sexuality. Unfortunately I could not find a way to bold the emojis or move them closer together so instead I decided to try a few other methods.
 
 # Option 3: Icon Arrays Using RPhyloPic
 Because I'm looking at animals, there's always the option to use animals from [Phylopic](https://www.phylopic.org/)! And while emojifont's sheep options were disappointingly scarce, there were a lot more options here. I pulled a selection, looked at them, and then picked my favorites so that each sexual orientation of sheep could be slighly different.
@@ -174,7 +179,8 @@ ggplot(phylo_data, aes(x, y, color = group)) +
 ```
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/code15-1.png" alt="" width="672" style="display: block; margin: auto;" />
-If it bothers you that they aren't facing the same directions, you can go down to [the code](#extracode) and see how to flip them. My method requires exporting them as png and re-importing them using `geom_image()`, so it's a bit of a pain, but it does work!
+
+If it bothers you that they aren't facing the same directions, you can go down to [the extra code](#extras) and see how to flip them. My method requires exporting them as png and re-importing them using `geom_image()`, so it's a bit of a pain, but it does work!
 
 # Option 4: Icon Arrays Using FontAwesome
 This one is not my favorite method because I could not get it to register most of the listed font awesome icons, and a lot of font awesome icons are apparently pay-walled. However, you can technically use fontawesome to make icon arrays too. I couldn't get any of the sheep-adjacent icons to play, so instead we're using one of the few icons I could get to work: the paw.
@@ -189,7 +195,7 @@ ggplot(waffle_data, aes(x, y, color = group)) +
 <img src="{{< blogdown/postref >}}index_files/figure-html/code16-1.png" alt="" width="672" style="display: block; margin: auto;" />
 
 # Option 5: Icon Arrays Using Image Files and ggimage
-If you are picky you can always use your own pictures! They can be .png, .svg, etc. This method is super slow though because it is re-importing the image to R over and over and over again. I've done this using the `geom_image()` function from `ggimage` which is smart enough to recolor the png for you. In this example I downloaded a [sheep png](https://svgsilh.com/image/30681.html) and recolored it.
+If you are picky you can always use your own pictures! They can be .png, .svg, etc. This method is super slow though because it is re-importing the image to R over and over and over again. I've done this using the `geom_image()` function from `ggimage` which is smart enough to recolor the png for you. In this example I downloaded a [sheep png](https://svgsilh.com/image/30681.html) and recolored it. It does for some reason now look like a moose, but that's... fine.
 
 
 ``` r
@@ -288,8 +294,11 @@ waffle_data1 <- waffle_data %>%
   mutate(label = emoji("sheep"))
 
 ggplot(waffle_data1, aes(x, y, color = group)) + 
-  geom_text(aes(label=label), family = "EmojiOne", size=14) +
-  mysettings
+  geom_text(aes(label=label), family = "EmojiOne", 
+            size=10, 
+            nudge_y = .25) + #this centered the emojis better
+  mysettings +
+  scale_y_discrete(expand=c(0,1)) #this also helped with clipping
 ```
 
 ``` r
@@ -334,7 +343,7 @@ ggplot(waffle_data, aes(x, y, color = group)) +
   mysettings
 ```
 
-# Extra Code {#extracode}
+# Extra Code {#extras}
 Here's how to flip the images and use them to make the graphic at the start of this blog post.
 
 ``` r
@@ -378,7 +387,7 @@ ggplot(phylo_data1, aes(x, y, color = group)) +
 ```
 
 ``` r
-ggsave("ImagePreview.jpg", width = 5, height = 5, units = "in", dpi =72)
+ggsave("ImagePreview.jpg", width = 6, height = 6, units = "in", dpi =72)
 ```
 
 

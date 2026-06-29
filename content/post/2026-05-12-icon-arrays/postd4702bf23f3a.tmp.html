@@ -1,0 +1,246 @@
+<p align="center">
+<img src="ImagePreview.jpg" alt="Icon array of colored sheep. Most are in grey, but 40% are in purple, green, or blue which corresponds to the text reading that this is the proportion of domestic rams that are bisexual, asexual, or homosexual."/>
+</p>
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Happy pride month! Did you know that around 8% of rams are homosexual, 12% are asexual, and around 18% are bisexual? Would you like to find a convenient way of representing that information graphically? Well, that’s often where an <strong>icon array</strong> or <strong>waffle plot</strong> would step in, and that’s what this blog post is all about.</p>
+<p>Read on, or you can <a href="#thecode">skip to the bottom</a> to just see the code.</p>
+</div>
+<div id="background-on-plot-types" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Background on Plot Types</h1>
+<p>Icon arrays display counts and percentages using repeated shapes. A waffle chart is a specific type of icon array where the icon in question is a square. These are often used to make really boring topics (politics) appear faintly interesting, so there’s a lot of research into how to most effectively use an icon array to keep people from falling asleep staring at your midterm predictions.</p>
+<p>When designed well, icon arrays are more effective for the general public than the simpler bar chart (<a href="#references">Kandel et al. 2026</a>). When designed poorly, they are way worse than a simple bar chart - and there are lots of ways to design them poorly (<a href="#references">Xiong et al. 2022</a>). Good design choices are essentially to keep it simple, fill from left to right/top to bottom and not do insane things like “around the corner” or “outside in” or “random polka dots.”</p>
+</div>
+<div id="packages" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Packages</h1>
+<p>I’ll show you how to use a variety of different icon sources in this walkthrough. Most of them will use the <code>ggwaffle</code> package, which currently you need to install using github. Make sure you have <code>devtools</code> installed and then you should be able to use this code:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;liamgilbey/ggwaffle&quot;</span>)</span></code></pre></div>
+<p>Then it’s the standard graphics and data analysis packages, plus <code>ggwaffle</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co">#Version 4.0.2</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co">#Version 1.2.0</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(ggwaffle) <span class="co">#Version 0.2.5</span></span></code></pre></div>
+<p>There are lots of different sources for icons depending on what you’re interested in. In this walkthrough I’ll show you examples from <code>emojifont</code>, <code>fontawesome</code>, and <code>rphylopic</code>. Using png files requires the function <code>geom_image()</code> from the <code>ggimage</code> package, so we’ll load that too.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(emojifont) <span class="co">#Version 0.5.4</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(fontawesome) <span class="co">#Version 0.5.3</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">library</span>(rphylopic) <span class="co">#Version 1.6.0</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">library</span>(ggimage) <span class="co">#Version 0.3.5</span></span></code></pre></div>
+</div>
+<div id="setting-up-your-data" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Setting Up Your Data</h1>
+<p>Let’s make some data, following the statistics reported by <a href="#references">Roselli 2009</a> - ∼60% heterosexual, while ∼8-10% are homosexual, ∼12-18% are asexual, and ∼18-22% are bisexual. We want to have this add up to 100, so we’ll use 8, 12, 20, and 60. I’m going to start by making some raw data that just reflects those proportions.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>ram <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Sexuality =</span> </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;Homosexual&quot;</span>, <span class="dv">8</span>), </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Asexual&quot;</span>, <span class="dv">12</span>), </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Bisexual&quot;</span>, <span class="dv">20</span>), </span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Heterosexual&quot;</span>, <span class="dv">60</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Sexuality =</span> </span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>        <span class="fu">factor</span>(Sexuality, <span class="at">levels =</span> </span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>         <span class="fu">c</span>(<span class="st">&quot;Heterosexual&quot;</span>, <span class="st">&quot;Bisexual&quot;</span>, <span class="st">&quot;Asexual&quot;</span>, <span class="st">&quot;Homosexual&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">tibble</span>()</span></code></pre></div>
+<p>Just having raw data isn’t going to work well with making an icon array, because you don’t know exactly where to place each point. We may know there are 60 dots for heterosexual, but <code>ggplot2</code> needs x and y coordinates for each dot. This is where the <code>ggwaffle</code> package really comes in handy, it makes it very easy to take a tibble dataframe and use the function <code>waffle_iron()</code> to, erm, bake it into the correct shape.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>waffle_data <span class="ot">&lt;-</span> <span class="fu">waffle_iron</span>(ram, </span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                 <span class="fu">aes_d</span>(<span class="at">group =</span> Sexuality), <span class="at">rows =</span> <span class="dv">10</span>)</span></code></pre></div>
+<p>My one complaint about the <code>waffle_iron()</code> function is that it does not allow you to specify fill direction. But it does fill it in a pretty normal direction so I’ll deal.</p>
+<p>For fun, we’ll use some of the designated pride flag official colors. Though I did choose to go with the aromatic flag colors instead of asexual, just because otherwise we had too many purples. Aromantic is different than asexual in people, but when it comes to sheep I’m not sure how one would tell.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>colorcode <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Bisexual =</span> <span class="st">&quot;#9B4F96&quot;</span>, <span class="at">Asexual =</span> <span class="st">&quot;#3DA542&quot;</span>, </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>               <span class="at">Homosexual =</span> <span class="st">&quot;#0038A8&quot;</span>, <span class="at">Heterosexual =</span> <span class="st">&quot;darkgrey&quot;</span>)</span></code></pre></div>
+<p>To shorten up my code, I’m going to store a bunch of my ggplot settings as an object and just call that.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>mysettings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colorcode), <span class="co">#my colors</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> colorcode), <span class="co">#my colors</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="fu">coord_equal</span>(), <span class="co">#force it to be a square</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="fu">theme_void</span>() , <span class="co">#turn off axes</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="co">#turn off the legend</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="option-1-generalized-icon-array" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Option 1: Generalized Icon Array</h1>
+<p>Our data is now in the right position for waffling! You can use this data just in default <code>geom_point()</code> at this point, that’s the beauty of <code>ggwaffle</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<p><img src="index_files/figure-html/code8-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>If you’d like to make an actual waffle-shaped icon array you can use <code>geom_waffle()</code> from <code>ggwaffle()</code> in a very similar manner, just make sure to specify fill rather than color. Alternately, you can turn the pch code for <code>geom_point()</code> into a square and mess around with the size, your choice.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">fill =</span> group)) <span class="sc">+</span> </span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">geom_waffle</span>() <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<p><img src="index_files/figure-html/code9-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>So that’s the basic icon array, but dots are deeply boring so let’s try some with actual icons!</p>
+</div>
+<div id="option-2-icon-arrays-using-emojifont" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Option 2: Icon Arrays Using emojifont</h1>
+<p>This package can be great… provided you either want to use the same icon over and over again, or all your chosen icons are common emojis. In my case, there’s only one sheep emoji. To see what emojis are present for that word, you can use the <code>search_emoji()</code> function, e.g.:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">emoji</span>(<span class="fu">search_emoji</span>(<span class="st">&quot;sheep&quot;</span>))</span></code></pre></div>
+<p>To use the <code>emojifont</code> package, you have to switch from <code>geom_point()</code> to <code>geom_text()</code>. That means that you will need a column that has the emoji in question. In my case because I’m just using one emoji it’s not so important but if you have more than one, you’ll want this column for sure. Then, use <code>geom_text()</code> and be sure to specify both the label (in the <code>aes()</code> function) and the font family.</p>
+<p>I did have some issues with half sheep because <code>geom_text()</code> doesn’t automatically center the labels, so you might need to use <em>nudge_x</em> or <em>nudge_y</em>, or add the expansion function in <code>scale_y_discrete()</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>waffle_data1 <span class="ot">&lt;-</span> waffle_data <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">emoji</span>(<span class="st">&quot;sheep&quot;</span>))</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data1, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>label), <span class="at">family =</span> <span class="st">&quot;EmojiOne&quot;</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>            <span class="at">size=</span><span class="dv">10</span>, </span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>            <span class="at">nudge_y =</span> .<span class="dv">25</span>) <span class="sc">+</span> <span class="co">#this centered the emojis better</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  mysettings <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="co">#this also helped with clipping</span></span></code></pre></div>
+<p><img src="index_files/figure-html/code11-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>And there you have it, a very difficult to see and read plot about sheep sexuality. Unfortunately I could not find a way to bold the emojis or move them closer together so instead I decided to try a few other methods.</p>
+</div>
+<div id="option-3-icon-arrays-using-rphylopic" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Option 3: Icon Arrays Using RPhyloPic</h1>
+<p>Because I’m looking at animals, there’s always the option to use animals from <a href="https://www.phylopic.org/">Phylopic</a>! And while emojifont’s sheep options were disappointingly scarce, there were a lot more options here. I pulled a selection, looked at them, and then picked my favorites so that each sexual orientation of sheep could be slighly different.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#Pull your phylopics</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>uuid.var <span class="ot">&lt;-</span> <span class="fu">get_uuid</span>(<span class="at">name =</span> <span class="st">&quot;sheep&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co">#If you want to see your phylopics</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">get_phylopic</span>(uuid.var[<span class="dv">1</span>]))</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#If you want to see them one at a time and select your favorite</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">pick_phylopic</span>(<span class="at">name =</span> <span class="st">&quot;sheep&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#Match up icons to the correct sheep sexuality</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>phylo_data <span class="ot">&lt;-</span> waffle_data <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label3 =</span> <span class="fu">case_when</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Asexual&quot;</span> <span class="sc">~</span> uuid.var[<span class="dv">3</span>],</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Bisexual&quot;</span> <span class="sc">~</span>uuid.var[<span class="dv">6</span>],</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Heterosexual&quot;</span> <span class="sc">~</span>uuid.var[<span class="dv">7</span>],</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> uuid.var[<span class="dv">1</span>]</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>    ))</span></code></pre></div>
+<p>Now, let’s plot! You’ll notice I’m specifying <code>rphylopic::</code> here - that’s because for some reason, <code>ggimage</code> seems to be trying to overwrite that and give me an error because I did not previously download these images. So if you too get an <em>Image resource of Phylopic database is not available for</em> error, this is why.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">ggplot</span>(phylo_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  rphylopic<span class="sc">::</span><span class="fu">geom_phylopic</span>(<span class="fu">aes</span>(<span class="at">uuid=</span>label3), <span class="at">size =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<p><img src="index_files/figure-html/code15-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+<p>If it bothers you that they aren’t facing the same directions, you can go down to <a href="#extras">the extra code</a> and see how to flip them. My method requires exporting them as png and re-importing them using <code>geom_image()</code>, so it’s a bit of a pain, but it does work!</p>
+</div>
+<div id="option-4-icon-arrays-using-fontawesome" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Option 4: Icon Arrays Using FontAwesome</h1>
+<p>This one is not my favorite method because I could not get it to register most of the listed font awesome icons, and a lot of font awesome icons are apparently pay-walled. However, you can technically use fontawesome to make icon arrays too. I couldn’t get any of the sheep-adjacent icons to play, so instead we’re using one of the few icons I could get to work: the paw.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span><span class="fu">fontawesome</span>(<span class="st">&quot;fa-paw&quot;</span>)), </span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>            <span class="at">family=</span><span class="st">&#39;fontawesome-webfont&#39;</span>, <span class="at">size=</span><span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<p><img src="index_files/figure-html/code16-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="option-5-icon-arrays-using-image-files-and-ggimage" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Option 5: Icon Arrays Using Image Files and ggimage</h1>
+<p>If you are picky you can always use your own pictures! They can be .png, .svg, etc. This method is super slow though because it is re-importing the image to R over and over and over again. I’ve done this using the <code>geom_image()</code> function from <code>ggimage</code> which is smart enough to recolor the png for you. In this example I downloaded a <a href="https://svgsilh.com/image/30681.html">sheep png</a> and recolored it. It does for some reason now look like a moose, but that’s… fine.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="fu">aes</span>(<span class="at">image =</span> <span class="st">&quot;30681.png&quot;</span>))<span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<p><img src="index_files/figure-html/code17-1.png" alt="" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="references" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> References</h1>
+<p>https://stackoverflow.com/questions/69133845/visualize-quantities-by-icons-using-r</p>
+<p>https://cran.r-project.org/web/packages/emojifont/vignettes/emojifont.html</p>
+<p>Roselli, Charles E., and F. Stormshak. “Prenatal programming of sexual partner preference: the ram model.” Journal of neuroendocrinology 21.4 (2009): 359-364. https://pmc.ncbi.nlm.nih.gov/articles/PMC2668810/</p>
+<p>Kandel, J., Liu, J., Wang, A. Z., Tseng, C., &amp; Szafir, D. A. (2025). Graphical Perception of Icon Arrays versus Bar Charts for Value Comparisons in Health Risk Communication. IEEE Transactions on Visualization and Computer Graphics. https://pmc.ncbi.nlm.nih.gov/articles/PMC13060550/</p>
+<p>Xiong, C., Sarvghad, A., Goldstein, D. G., Hofman, J. M., &amp; Demiralp, Ç. (2022, April). Investigating perceptual biases in icon arrays. In Proceedings of the 2022 CHI Conference on Human Factors in Computing Systems (pp. 1-12). https://dl.acm.org/doi/abs/10.1145/3491102.3501874</p>
+</div>
+<div id="thecode" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> The Code</h1>
+<p>Wanted just the code with no interruptions? K. Here you go.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;liamgilbey/ggwaffle&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">library</span>(ggplot2) <span class="co">#Version 4.0.2</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co">#Version 1.2.0</span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="fu">library</span>(ggwaffle) <span class="co">#Version 0.2.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">library</span>(emojifont) <span class="co">#Version 0.5.4</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">library</span>(fontawesome) <span class="co">#Version 0.5.3</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="fu">library</span>(rphylopic) <span class="co">#Version 1.6.0</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="fu">library</span>(ggimage) <span class="co">#Version 0.3.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>ram <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Sexuality =</span> </span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>                    <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;Homosexual&quot;</span>, <span class="dv">8</span>), </span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Asexual&quot;</span>, <span class="dv">12</span>), </span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Bisexual&quot;</span>, <span class="dv">20</span>), </span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>                      <span class="fu">rep</span>(<span class="st">&quot;Heterosexual&quot;</span>, <span class="dv">60</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Sexuality =</span> </span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>        <span class="fu">factor</span>(Sexuality, <span class="at">levels =</span> </span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>         <span class="fu">c</span>(<span class="st">&quot;Heterosexual&quot;</span>, <span class="st">&quot;Bisexual&quot;</span>, <span class="st">&quot;Asexual&quot;</span>, <span class="st">&quot;Homosexual&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>  <span class="fu">tibble</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>waffle_data <span class="ot">&lt;-</span> <span class="fu">waffle_iron</span>(ram, </span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>                 <span class="fu">aes_d</span>(<span class="at">group =</span> Sexuality), <span class="at">rows =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>colorcode <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Bisexual =</span> <span class="st">&quot;#9B4F96&quot;</span>, <span class="at">Asexual =</span> <span class="st">&quot;#3DA542&quot;</span>, </span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>               <span class="at">Homosexual =</span> <span class="st">&quot;#0038A8&quot;</span>, <span class="at">Heterosexual =</span> <span class="st">&quot;darkgrey&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>mysettings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> colorcode), <span class="co">#my colors</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>    <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> colorcode), <span class="co">#my colors</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="fu">coord_equal</span>(), <span class="co">#force it to be a square</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>  <span class="fu">theme_void</span>() , <span class="co">#turn off axes</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="co">#turn off the legend</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">fill =</span> group)) <span class="sc">+</span> </span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="fu">geom_waffle</span>() <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">emoji</span>(<span class="fu">search_emoji</span>(<span class="st">&quot;sheep&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>waffle_data1 <span class="ot">&lt;-</span> waffle_data <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">emoji</span>(<span class="st">&quot;sheep&quot;</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data1, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span>label), <span class="at">family =</span> <span class="st">&quot;EmojiOne&quot;</span>, </span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>            <span class="at">size=</span><span class="dv">10</span>, </span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>            <span class="at">nudge_y =</span> .<span class="dv">25</span>) <span class="sc">+</span> <span class="co">#this centered the emojis better</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>  mysettings <span class="sc">+</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">expand=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="co">#this also helped with clipping</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co">#Pull your phylopics</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>uuid.var <span class="ot">&lt;-</span> <span class="fu">get_uuid</span>(<span class="at">name =</span> <span class="st">&quot;sheep&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#If you want to see your phylopics</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">get_phylopic</span>(uuid.var[<span class="dv">1</span>]))</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#If you want to see them one at a time and select your favorite</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="fu">pick_phylopic</span>(<span class="at">name =</span> <span class="st">&quot;sheep&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co">#Match up icons to the correct sheep sexuality</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>phylo_data <span class="ot">&lt;-</span> waffle_data <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label3 =</span> <span class="fu">case_when</span>(</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Asexual&quot;</span> <span class="sc">~</span> uuid.var[<span class="dv">3</span>],</span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Bisexual&quot;</span> <span class="sc">~</span>uuid.var[<span class="dv">6</span>],</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Heterosexual&quot;</span> <span class="sc">~</span>uuid.var[<span class="dv">7</span>],</span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> uuid.var[<span class="dv">1</span>]</span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>    ))</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">ggplot</span>(phylo_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  rphylopic<span class="sc">::</span><span class="fu">geom_phylopic</span>(<span class="fu">aes</span>(<span class="at">uuid=</span>label3), <span class="at">size =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label=</span><span class="fu">fontawesome</span>(<span class="st">&quot;fa-paw&quot;</span>)), </span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>            <span class="at">family=</span><span class="st">&#39;fontawesome-webfont&#39;</span>, <span class="at">size=</span><span class="dv">6</span>) <span class="sc">+</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>  mysettings</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">ggplot</span>(waffle_data, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="fu">aes</span>(<span class="at">image =</span> <span class="st">&quot;30681.png&quot;</span>))<span class="sc">+</span></span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  mysettings</span></code></pre></div>
+</div>
+<div id="extras" class="section level1" number="12">
+<h1><span class="header-section-number">12</span> Extra Code</h1>
+<p>Here’s how to flip the images and use them to make the graphic at the start of this blog post.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>pic1 <span class="ot">&lt;-</span> <span class="fu">get_phylopic</span>(<span class="at">uuid=</span>uuid.var[<span class="dv">1</span>])</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>pic1 <span class="ot">&lt;-</span> <span class="fu">flip_phylopic</span>(pic1, <span class="at">horizontal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="fu">save_phylopic</span>(pic1, <span class="st">&quot;pic1.png&quot;</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>pic3 <span class="ot">&lt;-</span> <span class="fu">get_phylopic</span>(<span class="at">uuid=</span>uuid.var[<span class="dv">3</span>])</span>
+<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a>pic3 <span class="ot">&lt;-</span> <span class="fu">flip_phylopic</span>(pic3, <span class="at">horizontal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="fu">save_phylopic</span>(pic3, <span class="st">&quot;pic3.png&quot;</span>)</span>
+<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a>pic6 <span class="ot">&lt;-</span> <span class="fu">get_phylopic</span>(<span class="at">uuid=</span>uuid.var[<span class="dv">6</span>])</span>
+<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a><span class="fu">save_phylopic</span>(pic6, <span class="st">&quot;pic6.png&quot;</span>)</span>
+<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a>pic7 <span class="ot">&lt;-</span> <span class="fu">get_phylopic</span>(<span class="at">uuid=</span>uuid.var[<span class="dv">7</span>])</span>
+<span id="cb35-13"><a href="#cb35-13" tabindex="-1"></a>pic7 <span class="ot">&lt;-</span> <span class="fu">flip_phylopic</span>(pic7, <span class="at">horizontal=</span><span class="cn">TRUE</span>)</span>
+<span id="cb35-14"><a href="#cb35-14" tabindex="-1"></a><span class="fu">save_phylopic</span>(pic7, <span class="st">&quot;pic7.png&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co">#Note, this does use the ggtext library, version 0.1.2</span></span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>phylo_data1 <span class="ot">&lt;-</span> waffle_data <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">label3 =</span> <span class="fu">case_when</span>(</span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Asexual&quot;</span> <span class="sc">~</span> <span class="st">&quot;pic3.png&quot;</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Bisexual&quot;</span> <span class="sc">~</span> <span class="st">&quot;pic6.png&quot;</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>      group <span class="sc">==</span> <span class="st">&quot;Heterosexual&quot;</span> <span class="sc">~</span><span class="st">&quot;pic7.png&quot;</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;pic1.png&quot;</span></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>    ))</span>
+<span id="cb36-10"><a href="#cb36-10" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" tabindex="-1"></a><span class="fu">ggplot</span>(phylo_data1, <span class="fu">aes</span>(x, y, <span class="at">color =</span> group)) <span class="sc">+</span> </span>
+<span id="cb36-12"><a href="#cb36-12" tabindex="-1"></a>  <span class="fu">geom_image</span>(<span class="fu">aes</span>(<span class="at">image=</span>label3), <span class="at">size =</span> .<span class="dv">08</span>, <span class="at">use_cache =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13" tabindex="-1"></a>  mysettings <span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Nearly 40% of domestic rams are&quot;</span>,</span>
+<span id="cb36-15"><a href="#cb36-15" tabindex="-1"></a>  <span class="at">subtitle=</span><span class="st">&quot;&lt;span style=&#39;color:#9B4F96;&#39;&gt;bisexual&lt;/span&gt;, </span></span>
+<span id="cb36-16"><a href="#cb36-16" tabindex="-1"></a><span class="st">            &lt;span style=&#39;color:#3DA542;&#39;&gt;asexual&lt;/span&gt;, </span></span>
+<span id="cb36-17"><a href="#cb36-17" tabindex="-1"></a><span class="st">         or &lt;span style=&#39;color:#0038A8;&#39;&gt;homosexual&lt;/span&gt;&quot;</span>)<span class="sc">+</span></span>
+<span id="cb36-18"><a href="#cb36-18" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> ggtext<span class="sc">::</span><span class="fu">element_markdown</span>(<span class="at">hjust =</span> .<span class="dv">5</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face=</span><span class="st">&quot;bold&quot;</span>),</span>
+<span id="cb36-19"><a href="#cb36-19" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> .<span class="dv">5</span>, <span class="at">size =</span> <span class="dv">16</span>, <span class="at">face=</span><span class="st">&quot;bold&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">&quot;ImagePreview.jpg&quot;</span>, <span class="at">width =</span> <span class="dv">6</span>, <span class="at">height =</span> <span class="dv">6</span>, <span class="at">units =</span> <span class="st">&quot;in&quot;</span>, <span class="at">dpi =</span><span class="dv">72</span>)</span></code></pre></div>
+</div>
