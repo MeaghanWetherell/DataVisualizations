@@ -1,0 +1,166 @@
+---
+title: Icon Arrays and Waffle Plots
+date: '2026-05-12'
+slug: icon-arrays
+categories: []
+tags: ["ggplot2", "icons"]
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, 
+                      message=FALSE, fig.align = 'center', 
+                      results='hide')
+```
+
+# Introduction
+
+
+You can [skip to the bottom](#custom) to just see the code.
+
+
+# Packages
+
+```{r eval = FALSE}
+devtools::install_github("liamgilbey/ggwaffle")
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+
+library(ggwaffle)
+
+library(emojifont)
+library(fontawesome)
+library(rphylopic)
+library(ggimage)
+```
+
+# Setting Up Your Data
+By far the largest group of rams is female-oriented (∼60%), while ∼8 -10% are male-oriented, ∼12-18% are asexual, and ∼18-22% are bisexual 
+
+```{r}
+ram <- data.frame(Sexuality = c(rep("Homosexual", 8), rep("Asexual", 12), rep("Bisexual", 20), rep("Heterosexual", 60))) %>%
+  mutate(Sexuality = factor(Sexuality, levels = c("Heterosexual", "Bisexual", "Asexual", "Homosexual"))) %>%
+  tibble()
+
+waffle_data <- waffle_iron(ram, aes_d(group = Sexuality), rows = 10)
+
+
+colorcode <- c(Bisexual = "#9B4F96", Asexual = "black", Homosexual = "#0038A8", Heterosexual = "#FF0000")
+```
+
+# Generalized Icon Array
+
+```{r}
+ggplot(waffle_data, aes(x, y, color = group)) + 
+  geom_point(size = 4) +
+  coord_equal() + 
+  scale_color_manual(values = colorcode)+
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+# Using emojifont
+
+## Find Your Emojis
+```{r}
+emoji(search_emoji("sheep"))
+emoji(search_emoji("cow"))
+```
+
+```{r}
+waffle_data0 <- waffle_data %>%
+  mutate(label = emoji("sheep"))
+
+
+ggplot(waffle_data, aes(x, y, color = group)) + 
+  geom_text(aes(label=label), family = "EmojiOne", size=4) +
+  coord_equal() + 
+  theme_waffle()
+```
+
+# Using your own pictures with ggimage
+
+You can do this with png, svg, etc. It will take a little while to run as it does keep re-importing the image to R over and over again. Yes, it is smart enough to recolor png files!
+
+https://svgsilh.com/image/30681.html
+
+```{r}
+ggplot(waffle_data, aes(x, y, color = group)) + 
+  geom_image(aes(image = "30681.png"))+
+  scale_color_manual(values = colorcode)+
+  coord_equal() + 
+  theme_waffle()
+
+
+
+ggplot(waffle_data, aes(x, y, color = group)) + 
+  geom_image(aes(image = "shank.png"))+
+  scale_color_manual(values = colorcode)+
+  coord_equal() + 
+  theme_waffle()
+```
+
+# Using RPhyloPic
+
+## Select your phylopics
+```{r}
+#Pull your phylopics
+uuid.var <- get_uuid(name = "sheep", n = 10)
+
+#If you want to see your phylopics
+plot(get_phylopic(uuid.var[1]))
+
+#If you want to see them one at a time and select your favorite
+pick_phylopic(name = "sheep", n = 10)
+```
+
+
+## Match Your Icons
+```{r}
+fav <- uuid.var[c(3,6, 7, 1)]
+
+waffle_data1 <- waffle_data %>%
+  mutate(label3 = case_when(
+      group == "Asexual" ~ fav[1],
+      group == "Bisexual" ~fav[2],
+      group == "Heterosexual" ~fav[3],
+      TRUE ~fav[4]
+    ))
+```
+
+
+```{r}
+ggplot(waffle_data1, aes(x, y, color = group)) + 
+  geom_phylopic(aes(uuid=label3), size = .5) +
+  coord_equal() + 
+  scale_color_manual(values = colorcode)+
+  theme_void()
+```
+
+Because you use geom_phylopic, you don't need to turn off the legend here.
+
+
+# Using FontAwesome
+This one is the last on the list because I could not get it to register most of the listed font awesome icons, and a lot of font awesome icons are apparently paywalled.
+```{r}
+waffle_data2 <- waffle_data %>%
+  mutate(label = fontawesome("fa-paw"))
+
+ggplot(waffle_data2, aes(x, y, color = group)) + 
+  geom_text(aes(label=label), family='fontawesome-webfont', size=4) +
+  coord_equal() + 
+  theme_waffle()
+```
+
+
+# References
+https://stackoverflow.com/questions/69133845/visualize-quantities-by-icons-using-r
+
+https://cran.r-project.org/web/packages/emojifont/vignettes/emojifont.html
+
+https://pmc.ncbi.nlm.nih.gov/articles/PMC2668810/
+
+# The Code {#custom}
+Wanted just the code with no interruptions? K. Here you go.

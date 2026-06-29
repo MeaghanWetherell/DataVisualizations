@@ -7,12 +7,10 @@ tags: ["ggplot2", "colorblindness", "colors"]
 ---
 
 
-
-
-You can [skip to the bottom](#custom) to just see the code.
-
 # Introduction
 In a [previous post](https://meaghanwetherell.netlify.app/2026/04/27/why-ggplot2-s-default-color-palette-is-bad/) I talked a lot about why `ggplot2` has a terrible default color palette. In this post, I'll show you how to use the `colorBlindness` package to quickly and easily determine if your particular color palette is equally garbage. 
+
+You can [skip to the bottom](#custom) to just see the code.
 
 # Packages
 
@@ -113,7 +111,6 @@ cvdPlot(plot5, layout = "origin")
 <img src="{{< blogdown/postref >}}index_files/figure-html/medium3-1.png" alt="" width="672" style="display: block; margin: auto;" />
 
 # Possibly Impossible Mode: Raster Objects
-
 The biggest flaw in `colorBlindness` in my opinion is that it is entirely designed to work on vector graphics, not raster. So if you are using external graphics or trying to make maps with things like lidar data, you run into issues. This will also crop up if you are using certain formats of images in your ggplot objects, like png files or logos.
 
 I have played around with a lot of different possible solutions to this. I did not at any point find an 'easy' method. If I do, I will come back and update this! 
@@ -121,7 +118,6 @@ I have played around with a lot of different possible solutions to this. I did n
 
 
 # References and Further Reading
-
 Hannah Weller. 2005. "[Using the dichromat package to check if your plot is colorblind-friendly.](https://hiweller.rbind.io/post/using-the-dichromat-package-to-check-if-your-plot-is-colorblind-friendly/)"
 
 Jianhong Ou. 2021. "[colorBlindness: Safe Color Set for Color Blindness.](https://cran.r-project.org/web/packages/colorBlindness/index.html)"
@@ -132,7 +128,6 @@ Guangchuang Yu. 2025. "[Convert plot to grob and ggplot object.](https://cran.r-
 
 # The Code {#custom}
 Wanted just the code with no interruptions? K. Here you go.
-
 
 ``` r
 library(ggplot2) #graphics

@@ -6,15 +6,15 @@ categories: ["ggplot2"]
 tags: ["ggplot2", "colorblindness", "colors"]
 ---
 
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message=FALSE, fig.align = 'center', results='hide')
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, 
+                      message=FALSE, fig.align = 'center', 
+                      results='hide')
 ```
-
-You can [skip to the bottom](#custom) to just see the code.
-
 # Introduction
 In a [previous post](https://meaghanwetherell.netlify.app/2026/04/27/why-ggplot2-s-default-color-palette-is-bad/) I talked a lot about why `ggplot2` has a terrible default color palette. In this post, I'll show you how to use the `colorBlindness` package to quickly and easily determine if your particular color palette is equally garbage. 
+
+You can [skip to the bottom](#custom) to just see the code.
 
 # Packages
 ```{r packages}
@@ -95,7 +95,6 @@ cvdPlot(plot5, layout = "origin")
 ```
 
 # Possibly Impossible Mode: Raster Objects
-
 The biggest flaw in `colorBlindness` in my opinion is that it is entirely designed to work on vector graphics, not raster. So if you are using external graphics or trying to make maps with things like lidar data, you run into issues. This will also crop up if you are using certain formats of images in your ggplot objects, like png files or logos.
 
 I have played around with a lot of different possible solutions to this. I did not at any point find an 'easy' method. If I do, I will come back and update this! 
@@ -128,7 +127,8 @@ ggplot(iris, aes(x = Sepal.Length)) +
 cvdPlot()  
 
 
-img2 <- grid::rasterGrob(png::readPNG(system.file("img", "Rlogo.png", package="png")), interpolate = TRUE)
+img2 <- grid::rasterGrob(png::readPNG(system.file("img", 
+                        "Rlogo.png", package="png")), interpolate = TRUE)
 
 img <- png::readPNG("plot2.png")
 g <- grid::rasterGrob(img, interpolate=TRUE)
@@ -158,7 +158,6 @@ cvdPlot(img2)
 ```
 
 # References and Further Reading
-
 Hannah Weller. 2005. "[Using the dichromat package to check if your plot is colorblind-friendly.](https://hiweller.rbind.io/post/using-the-dichromat-package-to-check-if-your-plot-is-colorblind-friendly/)"
 
 Jianhong Ou. 2021. "[colorBlindness: Safe Color Set for Color Blindness.](https://cran.r-project.org/web/packages/colorBlindness/index.html)"
@@ -169,7 +168,6 @@ Guangchuang Yu. 2025. "[Convert plot to grob and ggplot object.](https://cran.r-
 
 # The Code {#custom}
 Wanted just the code with no interruptions? K. Here you go.
-
 ```{r packages, eval=FALSE}
 ```
 ```{r easy1, eval=FALSE}

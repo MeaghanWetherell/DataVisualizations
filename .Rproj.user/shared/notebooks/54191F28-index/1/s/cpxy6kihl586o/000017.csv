@@ -1,0 +1,8 @@
+"0","ggplot(waffle_data, aes(x, y, color = group)) + 
+  geom_image(aes(image = ""shank.png""))+
+  scale_color_manual(values = colorcode)+
+  coord_equal() + 
+  theme_waffle()
+"
+"2","Error: cannot allocate vector of size 165.7 Mb
+"
